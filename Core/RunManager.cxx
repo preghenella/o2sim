@@ -58,22 +58,26 @@ namespace o2sim
      ** the first to be called or enforce order of initialisation
      **/
 
+    std::cout << std::string(80, '-') << std::endl;
     LOG(INFO) << "Initialising \"" << "simulation" << "\" manager" << std::endl;
     if (!GetDelegate("simulation")->Init()) {
       LOG(ERROR) << "Failed initialising \"" << "simulation" << "\" manager" << std::endl;
       return kFALSE;
     }
+    std::cout << std::string(80, '-') << std::endl;
     
     /** loop over all delegates **/
     for (auto const &x : DelegateMap()) {
       if (x.first.EqualTo("simulation")) continue; //R+hack
       auto delegate = x.second;
       if (!delegate) continue;
+      std::cout << std::string(80, '-') << std::endl;
       LOG(INFO) << "Initialising \"" << x.first << "\" manager" << std::endl;
       if (!delegate->Init()) {
 	LOG(ERROR) << "Failed initialising \"" << x.first << "\" manager" << std::endl;
 	return kFALSE;
       }
+      std::cout << std::string(80, '-') << std::endl;
     }
 
     /** init FairRunSim **/
@@ -110,8 +114,10 @@ namespace o2sim
     /** process command **/
 
     Bool_t retval = ConfigurationManager::ProcessCommand(command);
-    if (!retval)
-      LOG(ERROR) << "\"" << command << "\" is not a valid command" << std::endl; 
+    if (!retval) {
+      LOG(ERROR) << "\"" << command << "\" is not a valid command" << std::endl;
+      exit(1);
+    }
     return retval;
   }
 
@@ -132,6 +138,7 @@ namespace o2sim
     /** process lines **/
     std::string whitespace = " \t\f\v\n\r";
     std::string comment = "#";
+    Bool_t retval = kTRUE;
     for (std::string line; getline(fin, line);) {
       /** remove comments **/
       line = line.substr(0, line.find_first_of(comment));
@@ -146,11 +153,10 @@ namespace o2sim
       if (line.size() <= 0) continue;
       /** process command **/
       TString command = line;
-      ProcessCommand(command);
+      retval &= ProcessCommand(command);
     }
-      
-    /** success **/
-    return kTRUE;
+
+    return retval;
   }
   
   /*****************************************************************/

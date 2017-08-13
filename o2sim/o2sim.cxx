@@ -20,10 +20,12 @@ main (Int_t argc, char **argv)
   FairRunSim *rs = new FairRunSim();
   o2sim::RunManager *rm = new o2sim::RunManager();
 
-  if (argc == 2) rm->ProcessFile(argv[1]);
-  
-  rm->Init();
-  rm->Run();
+  if (argc == 2) if (!rm->ProcessFile(argv[1])) exit(1);
+  if (!rm->Init()) exit(1);
+  if (!rm->Run()) exit(1);
+
+  delete rm;
+  delete rs;
   
   return 0;
 }
