@@ -23,6 +23,7 @@ namespace o2sim
   {
     /** deafult constructor **/
     
+    RegisterValue("geometryFileName", "TPCGeometry.root");
   }
 
   /*****************************************************************/
@@ -38,7 +39,8 @@ namespace o2sim
 
     /** create module **/
     o2::TPC::Detector *module = new o2::TPC::Detector("TPC", kTRUE);
-
+    module->SetGeoFileName(GetValue("geometryFileName"));
+    
     /** configure module **/
 
     /** success **/
