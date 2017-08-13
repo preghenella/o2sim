@@ -144,6 +144,27 @@ namespace o2sim
   }
 
   /*****************************************************************/
+
+  Bool_t
+  ConfigurationManager::ParseValue(TString name, Int_t *ret, Int_t n)
+  {
+    /** parse value **/
+
+    if (!ValidValue(name)) return kFALSE;
+    TString str = GetValue(name);
+    str.ReplaceAll(",", " ");
+    TObjArray *oa = str.Tokenize(" \t");
+    if (oa->GetEntries() != n) return kFALSE;
+    for (Int_t i = 0; i < n; i++) {
+      TObjString *os = (TObjString *)oa->At(i);
+      ret[i] = os->String().Atoi();
+    }
+
+    /** success **/
+    return kTRUE;
+  }
+
+  /*****************************************************************/
   /*****************************************************************/
 
 } /** namespace o2sim **/

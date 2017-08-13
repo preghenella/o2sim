@@ -53,6 +53,7 @@ namespace o2sim {
     value_t GetValue(TString name) {return fValue[name];};
     Bool_t ValidValue(TString name) {return fValue.count(name) == 1;};
     Bool_t ParseValue(TString name, Float_t *ret, Int_t n);
+    Bool_t ParseValue(TString name, Int_t *ret, Int_t n);
 
     Bool_t RegisterDelegate(TString name, delegate_t *delegate);
     delegate_t *GetDelegate(TString name) {return fDelegate[name];};
