@@ -53,7 +53,10 @@ namespace o2sim
     for (auto const &x : DelegateMap()) {
       auto delegate = dynamic_cast<ModuleManagerDelegate *>(x.second);
       if (!delegate) continue;
-      if (!delegate->Init()) continue;
+      if (!delegate->Init()) {
+	LOG(ERROR) << "Failed initialising \"" << x.first << "\" manager" << std::endl;
+	return kFALSE;
+      }
       auto module = delegate->GetModule();
       if (!module) continue;
       runsim->AddModule(module);

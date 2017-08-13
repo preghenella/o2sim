@@ -55,7 +55,10 @@ namespace o2sim
     for (auto const &x : DelegateMap()) {
       auto delegate = dynamic_cast<GeneratorManagerDelegate *>(x.second);
       if (!delegate) continue;
-      if (!delegate->Init()) continue;
+      if (!delegate->Init()) {
+	LOG(ERROR) << "Failed initialising \"" << x.first << "\" manager" << std::endl;
+	return kFALSE;
+      }
       auto generator = delegate->GetGenerator();
       if (!generator) continue;
       fPrimaryGenerator->AddGenerator(generator);

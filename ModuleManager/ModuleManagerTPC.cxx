@@ -45,7 +45,7 @@ namespace o2sim
 
     /** success **/
     fModule = module;
-    return module;
+    return kTRUE;
   }
   
   /*****************************************************************/
