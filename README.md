@@ -1,23 +1,31 @@
---------------------------------------------------------
 o2sim - The ALICE simulation software package for the o2
---------------------------------------------------------
 
-This software is supposed to be structured more or less as follows
+- o2sim/o2sim
+  This is the executable.
 
-- event generator manager
-  a class that takes care of the selection and configuration of the
-  event generator
+- Core/ConfigurationManager
+  The base class that establishes the protocol used by the
+  configuraton managers and which provides communication.
 
-- condition manager
-  a class that takes care of the
+- Core/RunManager
+  This class is the top node of the configuration stack.
+  It is responsible to steer the main configuration managers.
 
-- detector manager
+- SimulationManager/SimulationManager
+  This class is the main manager responsible to configure the
+  basics of the simulation run.
 
-- decay manager
-
-- ModuleManager
-  The manager responsible of adding modules to the simulation.
-  It should work with the help of detector-level managers that are delegated
-  for the creation and configuration of the module itself.
-
+- ModuleManager/ModuleManager
+  This class is the main manager responsible to configure and
+  add modules to the simulation. It works with the help of
+  detector-level managers that are delegated for the actual
+  configuration and creation of the module itself. The delegates
+  must comply with the ModuleManagerDelegate protocol.
+  
+- GeneratorManager/GeneratorManager
+  This class is the main manager responsible to configure and
+  add event generators to the simulation. It works with the help of
+  generator-level managers that are delegated for the actual
+  configuration and creation of the generator itself. The delegates
+  must comply with the GeneratorManagerDelegate protocol.
   
