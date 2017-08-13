@@ -13,6 +13,7 @@
 #include "GeneratorManager.h"
 #include "GeneratorManagerDelegate.h"
 #include "GeneratorManagerPythia6.h"
+#include "GeneratorManagerHijing.h"
 #include "FairRunSim.h"
 #include "FairPrimaryGenerator.h"
 
@@ -34,6 +35,7 @@ namespace o2sim
     
     /** register delegates **/
     RegisterDelegate("pythia6", new GeneratorManagerPythia6()); 
+    RegisterDelegate("hijing", new GeneratorManagerHijing()); 
     
   }
   

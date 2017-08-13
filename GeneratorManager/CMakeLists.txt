@@ -2,16 +2,20 @@
 
 set(MODULE o2simGeneratorManager)
 
+include_directories($ENV{HOME}/alice/AEGIS/THijing)
+
 set(SOURCES
     GeneratorManager.cxx
     GeneratorManagerDelegate.cxx
     GeneratorManagerPythia6.cxx
+    GeneratorManagerHijing.cxx
     )
    
 set(HEADERS
     GeneratorManager.h
     GeneratorManagerDelegate.h
     GeneratorManagerPythia6.h
+    GeneratorManagerHijing.h
     )
 		    
 O2SIM_GENERATE_LIBRARY()
