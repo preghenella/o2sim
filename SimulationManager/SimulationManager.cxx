@@ -34,6 +34,7 @@ namespace o2sim
     RegisterValue("materials_filename", "media.geo");
     RegisterValue("mc_engine", "TGeant3");
     RegisterValue("nevents", "1");
+    RegisterValue("run_id", "0");
     
     /** register delegates **/
     
@@ -60,6 +61,16 @@ namespace o2sim
     runsim->SetName(GetValue("mc_engine"));
     runsim->SetOutputFile(GetValue("output_filename"));
     runsim->SetMaterials(GetValue("materials_filename"));
+
+    /** set run ID **/
+    UInt_t run_id = 0;
+    TString run_id_str = GetValue("run_id");    
+    if (!run_id_str.IsDigit()) {
+      LOG(FATAL) << "Invalid run id: " << run_id_str << std::endl;
+      return kFALSE;
+    }
+    run_id = run_id_str.Atoi();
+    runsim->SetRunId(run_id);
     
     /** success **/
     return kTRUE;
