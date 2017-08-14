@@ -28,6 +28,7 @@ namespace o2sim
   {
     /** deafult constructor **/
 
+    RegisterValue("status", "...");
   }
   
   /*****************************************************************/
@@ -112,6 +113,9 @@ namespace o2sim
   {
     /** print **/
 
+    /** do not print if not active **/
+    if (!IsActive()) return;
+    
     Int_t width = 40;
     for (auto const &x : fValue) {
       std::cout << std::setw(width) << std::setfill(' ') << std::left << prepend + x.first << std::right << x.second << std::endl;
@@ -125,7 +129,7 @@ namespace o2sim
   /*****************************************************************/
 
   Bool_t
-  ConfigurationManager::ParseValue(TString name, Float_t *ret, Int_t n)
+  ConfigurationManager::ParseValue(TString name, Double_t *ret, Int_t n) const
   {
     /** parse value **/
 
@@ -146,7 +150,7 @@ namespace o2sim
   /*****************************************************************/
 
   Bool_t
-  ConfigurationManager::ParseValue(TString name, Int_t *ret, Int_t n)
+  ConfigurationManager::ParseValue(TString name, Int_t *ret, Int_t n) const
   {
     /** parse value **/
 

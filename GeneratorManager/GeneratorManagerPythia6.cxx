@@ -13,6 +13,7 @@
 #include "GeneratorManagerPythia6.h"
 #include "Generators/Generator.h"
 #include "TPythia6.h"
+#include "TPythia6Decayer.h"
 #include "TSystem.h"
 
 namespace o2sim
@@ -28,49 +29,73 @@ namespace o2sim
 
     RegisterValue("process", "minimum bias");
     RegisterValue("tune", "perugia 2011");
-    RegisterValue("energy", "13000");
   }
 
   /*****************************************************************/
 
-  Bool_t
-  GeneratorManagerPythia6::Init()
+  FairGenerator *
+  GeneratorManagerPythia6::Init() const
   {
     /** init **/
-
-    /** check active **/
-    if (!GetValue("status").Contains("active"))
-      return kTRUE;
-
-    /** create generator **/ 
-    o2::eventgen::Generator *generator = new o2::eventgen::Generator();
 
     /** configure and initialise pythia6 interface **/
     gSystem->Load("libpythia6");
     TPythia6 *py6 = TPythia6::Instance();
+    if (!py6) return NULL;
+    
+    /** get energy **/
+    Double_t energy;
+    if (!GetCMSEnergy(energy)) return NULL;
+
+    /** configure and initialise **/
     ConfigureBaseline(py6);
     ConfigureProcess(py6);
-    /** check energy **/
-    TString energy_str = GetValue("energy");
-    if (!energy_str.IsDigit() && !energy_str.IsFloat()) {
-      LOG(FATAL) << "Invalid energy: " << energy_str << std::endl;
-      return kFALSE;
-    }
-    Float_t energy = energy_str.Atof();
     py6->Initialize("CMS", "p+", "p+", energy);
-    
+
+    /** decayer **/
+    TPythia6Decayer *py6d = TPythia6Decayer::Instance();
+    TString decay_table = GetValue("decay_table");
+    if (gSystem->ExpandPathName(decay_table)) {
+      LOG(FATAL) << "Cannot expand \"" << "decay_table" << "\": " << decay_table << std::endl;
+      return NULL;
+    }
+    if (gSystem->AccessPathName(decay_table, EAccessMode::kFileExists)) {
+      LOG(FATAL) << "Cannot access decay table: " << decay_table << std::endl;
+      return NULL;
+    }
+    py6d->SetDecayTableFile(decay_table);
+    py6d->ReadDecayTable();
+    py6d->SetForceDecay(TPythia6Decayer::kNoDecay);
+
+    /** create generator **/ 
+    o2::eventgen::Generator *generator = new o2::eventgen::Generator();
+
     /** configure generator **/
     generator->SetGenerator(py6);
 
     /** success **/
-    fGenerator = generator;
-    return kTRUE;
+    return generator;
   }
   
   /*****************************************************************/
 
   Bool_t
-  GeneratorManagerPythia6::ConfigureBaseline(TPythia6 *py6)
+  GeneratorManagerPythia6::Terminate() const
+  {
+    /** terminate **/
+
+    TPythia6 *py6 = TPythia6::Instance();
+    if (!py6) return kFALSE;
+    py6->Pystat(2);
+
+    /** success **/
+    return kTRUE;
+  }
+
+  /*****************************************************************/
+
+  Bool_t
+  GeneratorManagerPythia6::ConfigureBaseline(TPythia6 *py6) const
   {
     /** configure baseline **/
 
@@ -111,7 +136,7 @@ namespace o2sim
   /*****************************************************************/
 
   Bool_t
-  GeneratorManagerPythia6::ConfigureProcess(TPythia6 *py6)
+  GeneratorManagerPythia6::ConfigureProcess(TPythia6 *py6) const
   {
     /** configure process **/
 

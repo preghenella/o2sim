@@ -32,13 +32,11 @@ namespace o2sim {
     ModuleManagerDelegate();
 
     /** methods **/
-    FairModule *GetModule() {return fModule;};
-
+    virtual FairModule *Init() const = 0;
+    virtual Bool_t Terminate() const = 0;
+    
   protected:
 
-    /** members **/
-    FairModule *fModule;
-    
     ClassDefOverride(ModuleManagerDelegate, 1)
       
   }; /** class ModuleManagerDelegate **/

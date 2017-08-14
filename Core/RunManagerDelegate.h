@@ -10,57 +10,37 @@
 
 /// \author R+Preghenella - August 2017
 
-#ifndef ALICEO2SIM_GENERATORMANAGERPYTHIA6_H_
-#define ALICEO2SIM_GENERATORMANAGERPYTHIA6_H_
+#ifndef ALICEO2SIM_RUNMANAGERDELEGATE_H_
+#define ALICEO2SIM_RUNMANAGERDELEGATE_H_
 
-#include "GeneratorManagerDelegate.h"
-
-class TPythia6;
+#include "Core/ConfigurationManager.h"
 
 namespace o2sim {
 
   /*****************************************************************/
   /*****************************************************************/
 
-  class GeneratorManagerPythia6 : public GeneratorManagerDelegate
+  class RunManagerDelegate : public ConfigurationManager
   {
 
   public:
 
-    enum ETune_t {
-      kDefault     = 0,
-      kPerugia0    = 320,
-      kPerugia2011 = 350
-    };
-    
-    enum EProcess_t {
-      kMinimumBias,
-      kJets,
-      kDirectGamma,
-      kCharm,
-      kBeauty,
-      kNProcesses
-    };
-    
     /** default constructor **/
-    GeneratorManagerPythia6();
+    RunManagerDelegate();
 
     /** methods **/
-    FairGenerator *Init() const override;
-    Bool_t Terminate() const override;
-    
-  private:
+    virtual Bool_t Init() const = 0;
+    virtual Bool_t Terminate() const = 0;
 
-    Bool_t ConfigureBaseline(TPythia6 *py6) const;
-    Bool_t ConfigureProcess(TPythia6 *py6) const;
-    
-    ClassDefOverride(GeneratorManagerPythia6, 1)
+  protected:
+
+    ClassDefOverride(RunManagerDelegate, 1)
       
-  }; /** class GeneratorManagerPythia6 **/
-
-  /*****************************************************************/
-  /*****************************************************************/
+  }; /** class RunManagerDelegate **/
   
+  /*****************************************************************/
+  /*****************************************************************/
+
 } /** namespace o2sim **/
 
-#endif /* ALICEO2SIM_GENERATORMANAGERPYTHIA6_H_ */
+#endif /* ALICEO2SIM_RUNMANAGERDELEGATE_H_ */

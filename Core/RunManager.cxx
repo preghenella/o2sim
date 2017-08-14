@@ -34,12 +34,19 @@ namespace o2sim
     RegisterDelegate("simulation", new SimulationManager()); 
     RegisterDelegate("module", new ModuleManager()); 
     RegisterDelegate("generator", new GeneratorManager()); 
+
+    /** default commands **/
+    ProcessCommand("status active");
+    ProcessCommand("simulation.status active");
+    ProcessCommand("module.status active");
+    ProcessCommand("generator.status active");
+    
   }
 
   /*****************************************************************/
 
   Bool_t
-  RunManager::Init()
+  RunManager::Init() const
   {
     /** init **/
 
@@ -60,7 +67,8 @@ namespace o2sim
 
     std::cout << std::string(80, '-') << std::endl;
     LOG(INFO) << "Initialising \"" << "simulation" << "\" manager" << std::endl;
-    if (!GetDelegate("simulation")->Init()) {
+    auto delegate = dynamic_cast<RunManagerDelegate *>(GetDelegate("simulation"));
+    if (!delegate || !delegate->IsActive() || !delegate->Init()) {
       LOG(ERROR) << "Failed initialising \"" << "simulation" << "\" manager" << std::endl;
       return kFALSE;
     }
@@ -69,8 +77,8 @@ namespace o2sim
     /** loop over all delegates **/
     for (auto const &x : DelegateMap()) {
       if (x.first.EqualTo("simulation")) continue; //R+hack
-      auto delegate = x.second;
-      if (!delegate) continue;
+      auto delegate = dynamic_cast<RunManagerDelegate *>(x.second);
+      if (!delegate || !delegate->IsActive()) continue;
       std::cout << std::string(80, '-') << std::endl;
       LOG(INFO) << "Initialising \"" << x.first << "\" manager" << std::endl;
       if (!delegate->Init()) {
@@ -90,7 +98,7 @@ namespace o2sim
   /*****************************************************************/
 
   Bool_t
-  RunManager::Run()
+  RunManager::Run() const
   {
     /** run **/
 
@@ -105,6 +113,28 @@ namespace o2sim
     return simulation->Run();
   }
     
+  /*****************************************************************/
+
+  Bool_t
+  RunManager::Terminate() const
+  {
+    /** terminate **/
+
+    /** loop over all delegates **/
+    for (auto const &x : DelegateMap()) {
+      auto delegate = dynamic_cast<RunManagerDelegate *>(x.second);
+      if (!delegate || !delegate->IsActive()) continue;
+      LOG(INFO) << "Terminating \"" << x.first << "\" manager" << std::endl;
+      if (!delegate->Terminate()) {
+	LOG(ERROR) << "Failed terminating \"" << x.first << "\" manager" << std::endl;
+	return kFALSE;
+      }
+    }
+    
+    /** success **/
+    return kTRUE;
+  }
+
   /*****************************************************************/
   /*****************************************************************/
   
@@ -162,7 +192,7 @@ namespace o2sim
   /*****************************************************************/
 
   void
-  RunManager::PrintStatus()
+  RunManager::PrintStatus() const
   {
     /** print status **/
     

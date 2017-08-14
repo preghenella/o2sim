@@ -23,7 +23,7 @@ namespace o2sim
   /*****************************************************************/
 
   ModuleManager::ModuleManager() :
-    ConfigurationManager()
+    RunManagerDelegate()
   {
     /** deafult constructor **/
 
@@ -38,7 +38,7 @@ namespace o2sim
   /*****************************************************************/
   
   Bool_t
-  ModuleManager::Init()
+  ModuleManager::Init() const
   {
     /** init **/
     
@@ -52,15 +52,35 @@ namespace o2sim
     /** loop over all delegates **/
     for (auto const &x : DelegateMap()) {
       auto delegate = dynamic_cast<ModuleManagerDelegate *>(x.second);
-      if (!delegate) continue;
-      if (!delegate->Init()) {
+      if (!delegate || !delegate->IsActive()) continue;
+      auto module = delegate->Init();
+      if (!module) {
 	LOG(ERROR) << "Failed initialising \"" << x.first << "\" manager" << std::endl;
 	return kFALSE;
       }
-      auto module = delegate->GetModule();
-      if (!module) continue;
       runsim->AddModule(module);
       LOG(INFO) << "Added module from \"" << x.first << "\" delegate" << std::endl;
+    }
+    
+    /** success **/
+    return kTRUE;
+  }
+  
+  /*****************************************************************/
+  
+  Bool_t
+  ModuleManager::Terminate() const
+  {
+    /** terminate **/
+    
+    /** loop over all delegates **/
+    for (auto const &x : DelegateMap()) {
+      auto delegate = dynamic_cast<ModuleManagerDelegate *>(x.second);
+      if (!delegate || !delegate->IsActive()) continue;
+      if (!delegate->Terminate()) {
+	LOG(ERROR) << "Failed terminating \"" << x.first << "\" manager" << std::endl;
+	return kFALSE;
+      }
     }
     
     /** success **/

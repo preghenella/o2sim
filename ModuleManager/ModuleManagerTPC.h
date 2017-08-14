@@ -26,7 +26,8 @@ namespace o2sim {
     ModuleManagerTPC();
 
     /** methods **/
-    virtual Bool_t Init() override;
+    FairModule *Init() const override;
+    Bool_t Terminate() const override {return kTRUE;}; 
 
   private:
 

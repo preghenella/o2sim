@@ -26,8 +26,9 @@ namespace o2sim {
     ModuleManagerCave();
 
     /** methods **/
-    virtual Bool_t Init() override;
-
+    FairModule *Init() const override;
+    Bool_t Terminate() const override {return kTRUE;}; 
+    
   private:
 
     ClassDefOverride(ModuleManagerCave, 1)

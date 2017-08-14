@@ -23,6 +23,7 @@ main (Int_t argc, char **argv)
   if (argc == 2) if (!rm->ProcessFile(argv[1])) exit(1);
   if (!rm->Init()) exit(1);
   if (!rm->Run()) exit(1);
+  if (!rm->Terminate()) exit(1);
 
   delete rm;
   delete rs;

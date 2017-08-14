@@ -41,7 +41,7 @@ namespace o2sim {
     ConfigurationManager();
 
     /** methods **/
-    virtual Bool_t Init() = 0;
+    Bool_t IsActive() const {return IsValue("status", "active");};
     
   protected:
 
@@ -49,14 +49,15 @@ namespace o2sim {
     virtual Bool_t ProcessCommand(TString command);
     void PrintStatus(TString prepend = "") const;
 
-    Bool_t RegisterValue(TString name, value_t value);
-    value_t GetValue(TString name) {return fValue[name];};
-    Bool_t ValidValue(TString name) {return fValue.count(name) == 1;};
-    Bool_t ParseValue(TString name, Float_t *ret, Int_t n);
-    Bool_t ParseValue(TString name, Int_t *ret, Int_t n);
-
+    Bool_t RegisterValue(TString name, value_t value = "...");
+    value_t GetValue(TString name) const {return fValue.at(name);};
+    Bool_t ValidValue(TString name) const {return fValue.count(name) == 1;};
+    Bool_t ParseValue(TString name, Double_t *ret, Int_t n) const;
+    Bool_t ParseValue(TString name, Int_t *ret, Int_t n) const;
+    Bool_t IsValue(TString name, TString value) const {return GetValue(name).EqualTo(value);};
+    
     Bool_t RegisterDelegate(TString name, delegate_t *delegate);
-    delegate_t *GetDelegate(TString name) {return fDelegate[name];};
+    delegate_t *GetDelegate(TString name) const {return fDelegate.at(name);};
     const delegate_map_t &DelegateMap() const {return fDelegate;};
 
     

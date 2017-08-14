@@ -18,5 +18,6 @@
 
 #pragma link C++ class o2sim::ConfigurationManager+;
 #pragma link C++ class o2sim::RunManager+;
+#pragma link C++ class o2sim::RunManagerDelegate+;
 
 #endif

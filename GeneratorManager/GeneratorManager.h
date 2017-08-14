@@ -13,7 +13,7 @@
 #ifndef ALICEO2SIM_GENERATORMANAGER_H_
 #define ALICEO2SIM_GENERATORMANAGER_H_
 
-#include "Core/ConfigurationManager.h"
+#include "Core/RunManagerDelegate.h"
 
 class FairPrimaryGenerator;
 
@@ -22,7 +22,7 @@ namespace o2sim {
   /*****************************************************************/
   /*****************************************************************/
   
-  class GeneratorManager : public ConfigurationManager
+  class GeneratorManager : public RunManagerDelegate
   {
     
   public:
@@ -31,14 +31,13 @@ namespace o2sim {
     GeneratorManager();
     
     /** methods **/
-    Bool_t Init() override;
+    Bool_t Init() const override;
+    Bool_t Terminate() const override;
     
   private:
 
-    Bool_t SetupInteractionDiamond();
+    Bool_t SetupInteractionDiamond(FairPrimaryGenerator *primaryGenerator) const;
     
-    FairPrimaryGenerator *fPrimaryGenerator;
-
     ClassDefOverride(GeneratorManager, 1)
       
   }; /** class GeneratorManager **/

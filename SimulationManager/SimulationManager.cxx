@@ -21,7 +21,7 @@ namespace o2sim
   /*****************************************************************/
 
   SimulationManager::SimulationManager() :
-    ConfigurationManager()
+    RunManagerDelegate()
   {
     /** deafult constructor **/
 
@@ -43,7 +43,7 @@ namespace o2sim
   /*****************************************************************/
   
   Bool_t
-  SimulationManager::Init()
+  SimulationManager::Init() const
   {
     /** init **/
 
@@ -77,9 +77,50 @@ namespace o2sim
   }
   
   /*****************************************************************/
+  
+  Bool_t
+  SimulationManager::Run() const
+  {
+    /** run **/
+    
+    /** FairRunSim instance **/
+    auto runsim = FairRunSim::Instance();
+    if (!runsim) {
+      LOG(FATAL) << "FairRunSim instance not created yet" << std::endl;
+      return kFALSE;
+    }
+
+    /** get number of events **/
+    Int_t nevents = -1;
+    TString nevents_str = GetValue("nevents");
+    if (!nevents_str.IsDigit()) {
+      LOG(FATAL) << "Invalid number of events: " << nevents_str << std::endl;
+      return kFALSE;
+    }
+    nevents = nevents_str.Atoi();
+    
+    /** run simulation **/
+    runsim->Run(nevents);
+
+    /** success **/
+    return kTRUE;
+  }
+
+  /*****************************************************************/
+  
+  Bool_t
+  SimulationManager::Terminate() const
+  {
+    /** terminate **/
+    
+    /** success **/
+    return kTRUE;
+  }
+  
+  /*****************************************************************/
 
   Bool_t
-  SimulationManager::SetupEnvironment()
+  SimulationManager::SetupEnvironment() const
   {
     /** setup environment **/
 
@@ -105,36 +146,6 @@ namespace o2sim
     gSystem->Setenv("GEOMPATH", path["geometry_path"].Data());
     gSystem->Setenv("CONFIG_DIR", path["config_path"].Data());
         
-    /** success **/
-    return kTRUE;
-  }
-
-  /*****************************************************************/
-  
-  Bool_t
-  SimulationManager::Run()
-  {
-    /** run **/
-    
-    /** FairRunSim instance **/
-    auto runsim = FairRunSim::Instance();
-    if (!runsim) {
-      LOG(FATAL) << "FairRunSim instance not created yet" << std::endl;
-      return kFALSE;
-    }
-
-    /** get number of events **/
-    Int_t nevents = -1;
-    TString nevents_str = GetValue("nevents");
-    if (!nevents_str.IsDigit()) {
-      LOG(FATAL) << "Invalid number of events: " << nevents_str << std::endl;
-      return kFALSE;
-    }
-    nevents = nevents_str.Atoi();
-    
-    /** run simulation **/
-    runsim->Run(nevents);
-
     /** success **/
     return kTRUE;
   }

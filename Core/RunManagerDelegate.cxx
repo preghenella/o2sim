@@ -10,7 +10,7 @@
 
 /// \author R+Preghenella - August 2017
 
-#include "ModuleManagerDelegate.h"
+#include "RunManagerDelegate.h"
 
 namespace o2sim
 {
@@ -18,13 +18,12 @@ namespace o2sim
   /*****************************************************************/
   /*****************************************************************/
 
-  ModuleManagerDelegate::ModuleManagerDelegate() :
+  RunManagerDelegate::RunManagerDelegate() :
     ConfigurationManager()
   {
     /** deafult constructor **/
 
     /** register values **/
-    RegisterValue("config", "default");
 
   }
 

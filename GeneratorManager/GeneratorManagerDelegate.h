@@ -14,8 +14,10 @@
 #define ALICEO2SIM_GENERATORMANAGERDELEGATE_H_
 
 #include "Core/ConfigurationManager.h"
+#include "TLorentzVector.h"
 
 class FairGenerator;
+class TLorentzVector;
 
 namespace o2sim {
 
@@ -31,13 +33,21 @@ namespace o2sim {
     GeneratorManagerDelegate();
 
     /** methods **/
-    FairGenerator *GetGenerator() {return fGenerator;};
+    virtual FairGenerator *Init() const = 0;
+    virtual Bool_t Terminate() const = 0;
 
   protected:
 
-    /** members **/
-    FairGenerator *fGenerator;
+    Bool_t GetBeamP(TString beam, Double_t &p) const; 
+    Bool_t GetBeamAZ(TString beam, Int_t &a, Int_t &z) const;
+    Bool_t GetBeamVector(TString beam, TLorentzVector &lv) const;
+
+    Bool_t GetCMSVector(TLorentzVector &lv) const;
+    Bool_t GetCMSEnergy(Double_t &e) const;
+    Bool_t GetCMSRapidity(Double_t &y) const;
     
+  private:
+
     ClassDefOverride(GeneratorManagerDelegate, 1)
       
   }; /** class GeneratorManagerDelegate **/

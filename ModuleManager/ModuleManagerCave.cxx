@@ -29,14 +29,10 @@ namespace o2sim
 
   /*****************************************************************/
 
-  Bool_t
-  ModuleManagerCave::Init()
+  FairModule *
+  ModuleManagerCave::Init() const
   {
     /** init **/
-
-    /** check active **/
-    if (!GetValue("status").Contains("active"))
-      return kTRUE;
 
     /** create module **/ 
     o2::Passive::Cave *module = new o2::Passive::Cave("CAVE");
@@ -45,8 +41,7 @@ namespace o2sim
     module->SetGeometryFileName(GetValue("geometryFileName"));
 
     /** success **/
-    fModule = module;
-    return kTRUE;
+    return module;
   }
   
   /*****************************************************************/

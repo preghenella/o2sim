@@ -15,6 +15,8 @@
 
 #include "GeneratorManagerDelegate.h"
 
+class THijing;
+
 namespace o2sim {
 
   /*****************************************************************/
@@ -29,9 +31,12 @@ namespace o2sim {
     GeneratorManagerHijing();
 
     /** methods **/
-    virtual Bool_t Init() override;
-
+    FairGenerator *Init() const override;
+    Bool_t Terminate() const override {return kTRUE;};
+    
   private:
+
+    Bool_t ConfigureBaseline(THijing *hij) const;
 
     ClassDefOverride(GeneratorManagerHijing, 1)
       

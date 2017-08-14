@@ -13,14 +13,14 @@
 #ifndef ALICEO2SIM_SIMULATIONMANAGER_H_
 #define ALICEO2SIM_SIMULATIONMANAGER_H_
 
-#include "Core/ConfigurationManager.h"
+#include "Core/RunManagerDelegate.h"
 
 namespace o2sim {
   
   /*****************************************************************/
   /*****************************************************************/
   
-  class SimulationManager : public ConfigurationManager
+  class SimulationManager : public RunManagerDelegate
   {
     
   public:
@@ -29,12 +29,13 @@ namespace o2sim {
     SimulationManager();
     
     /** methods **/
-    Bool_t Init() override;
-    Bool_t Run();
+    Bool_t Init() const override;
+    Bool_t Run() const;
+    Bool_t Terminate() const override;
     
   private:
     
-    Bool_t SetupEnvironment();
+    Bool_t SetupEnvironment() const;
     
     ClassDefOverride(SimulationManager, 1)
       

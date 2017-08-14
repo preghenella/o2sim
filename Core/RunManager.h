@@ -30,10 +30,12 @@ namespace o2sim {
 
     /** methods **/
     virtual Bool_t ProcessCommand(TString command) override;
-    void PrintStatus();
-    Bool_t Init() override;
-    Bool_t Run();
     Bool_t ProcessFile(TString filename);
+    void PrintStatus() const;
+
+    Bool_t Init() const;
+    Bool_t Run() const;
+    Bool_t Terminate() const;
     
   private:
 

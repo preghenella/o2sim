@@ -28,24 +28,19 @@ namespace o2sim
 
   /*****************************************************************/
 
-  Bool_t
-  ModuleManagerTPC::Init()
+  FairModule *
+  ModuleManagerTPC::Init() const
   {
     /** init **/
 
-    /** check active **/
-    if (!GetValue("status").Contains("active"))
-      return kTRUE;
-
     /** create module **/
     o2::TPC::Detector *module = new o2::TPC::Detector("TPC", kTRUE);
-    module->SetGeoFileName(GetValue("geometryFileName"));
     
     /** configure module **/
+    module->SetGeoFileName(GetValue("geometryFileName"));
 
     /** success **/
-    fModule = module;
-    return kTRUE;
+    return module;
   }
   
   /*****************************************************************/

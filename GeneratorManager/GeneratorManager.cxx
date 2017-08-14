@@ -24,8 +24,7 @@ namespace o2sim
   /*****************************************************************/
 
   GeneratorManager::GeneratorManager() :
-    ConfigurationManager(),
-    fPrimaryGenerator(new FairPrimaryGenerator())
+    RunManagerDelegate()
   {
     /** deafult constructor **/
 
@@ -42,7 +41,7 @@ namespace o2sim
   /*****************************************************************/
   
   Bool_t
-  GeneratorManager::Init()
+  GeneratorManager::Init() const
   {
     /** init **/
     
@@ -52,26 +51,57 @@ namespace o2sim
       LOG(FATAL) << "FairRunSim instance not created yet" << std::endl;
       return kFALSE;
     }
-   
-     /** loop over all delegates **/
+
+    /** create primary generator **/
+    FairPrimaryGenerator *primaryGenerator = new FairPrimaryGenerator();
+    
+    /** loop over all delegates **/
     for (auto const &x : DelegateMap()) {
       auto delegate = dynamic_cast<GeneratorManagerDelegate *>(x.second);
-      if (!delegate) continue;
-      if (!delegate->Init()) {
+      if (!delegate || !delegate->IsActive()) continue;
+      auto generator = delegate->Init();      
+      if (!generator) {
 	LOG(ERROR) << "Failed initialising \"" << x.first << "\" manager" << std::endl;
 	return kFALSE;
       }
-      auto generator = delegate->GetGenerator();
-      if (!generator) continue;
-      fPrimaryGenerator->AddGenerator(generator);
+      primaryGenerator->AddGenerator(generator);
       LOG(INFO) << "Added generator from \"" << x.first << "\" delegate" << std::endl;
     }
 
     /** config primary generator **/
-    if (!SetupInteractionDiamond()) return kFALSE;
+    if (!SetupInteractionDiamond(primaryGenerator)) return kFALSE;
 
-    runsim->SetGenerator(fPrimaryGenerator);
+    /** add primary generator to FairRunSim instance **/
+    runsim->SetGenerator(primaryGenerator);
     
+    /** success **/
+    return kTRUE;
+  }
+  
+  /*****************************************************************/
+  
+  Bool_t
+  GeneratorManager::Terminate() const
+  {
+    /** terminate **/
+    
+    /** FairRunSim instance **/
+    auto runsim = FairRunSim::Instance();
+    if (!runsim) {
+      LOG(FATAL) << "FairRunSim instance not created yet" << std::endl;
+      return kFALSE;
+    }
+
+    /** loop over all delegates **/
+    for (auto const &x : DelegateMap()) {
+      auto delegate = dynamic_cast<GeneratorManagerDelegate *>(x.second);
+      if (!delegate || !delegate->IsActive()) continue;
+      if (!delegate->Terminate()) {
+	LOG(ERROR) << "Failed terminating \"" << x.first << "\" manager" << std::endl;
+	return kFALSE;
+      }
+    }
+
     /** success **/
     return kTRUE;
   }
@@ -79,12 +109,12 @@ namespace o2sim
   /*****************************************************************/
 
   Bool_t
-  GeneratorManager::SetupInteractionDiamond()
+  GeneratorManager::SetupInteractionDiamond(FairPrimaryGenerator *primaryGenerator) const
   {
     /** setup interaction diamond **/
 
     /** parse interaction diamond xyz, sigma_xyz **/
-    Float_t xyz[3], sigma_xyz[3];
+    Double_t xyz[3], sigma_xyz[3];
     TString name = "diamond_xyz";
     if (!ParseValue(name, xyz, 3)) {
       LOG(FATAL) << "Cannot parse \"" << name << "\": " << GetValue(name) << std::endl;
@@ -96,10 +126,10 @@ namespace o2sim
       return kFALSE;
     }
     /** set primary generator **/
-    fPrimaryGenerator->SetBeam(xyz[0], xyz[1], sigma_xyz[0], sigma_xyz[1]);
-    fPrimaryGenerator->SetTarget(xyz[2], sigma_xyz[2]);
-    fPrimaryGenerator->SmearGausVertexXY(kTRUE);
-    fPrimaryGenerator->SmearGausVertexZ(kTRUE);
+    primaryGenerator->SetBeam(xyz[0], xyz[1], sigma_xyz[0], sigma_xyz[1]);
+    primaryGenerator->SetTarget(xyz[2], sigma_xyz[2]);
+    primaryGenerator->SmearGausVertexXY(kTRUE);
+    primaryGenerator->SmearGausVertexZ(kTRUE);
 
     /** success **/
     return kTRUE;

@@ -13,14 +13,14 @@
 #ifndef ALICEO2SIM_MODULEMANAGER_H_
 #define ALICEO2SIM_MODULEMANAGER_H_
 
-#include "Core/ConfigurationManager.h"
+#include "Core/RunManagerDelegate.h"
 
 namespace o2sim {
   
   /*****************************************************************/
   /*****************************************************************/
   
-  class ModuleManager : public ConfigurationManager
+  class ModuleManager : public RunManagerDelegate
   {
     
   public:
@@ -29,7 +29,8 @@ namespace o2sim {
     ModuleManager();
     
     /** methods **/
-    Bool_t Init() override;
+    Bool_t Init() const override;
+    Bool_t Terminate() const override;
     
   private:
 
