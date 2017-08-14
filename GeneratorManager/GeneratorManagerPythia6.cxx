@@ -86,7 +86,7 @@ namespace o2sim
 
     TPythia6 *py6 = TPythia6::Instance();
     if (!py6) return kFALSE;
-    py6->Pystat(2);
+    py6->Pystat(1);
 
     /** success **/
     return kTRUE;
