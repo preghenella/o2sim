@@ -46,9 +46,16 @@ namespace o2sim {
     
   protected:
 
+    enum EProcessCommand_t {
+      kNone      = 0x0,
+      kDelegates = 0x1,
+      kValues    = 0x2,
+      kAll       = 0x3
+    };
+
     /** methods **/
-    virtual Bool_t ProcessCommand(TString command);
-    virtual Bool_t ProcessFile(TString filename);
+    virtual Bool_t ProcessCommand(TString command, EProcessCommand_t processMask = kAll);
+    virtual Bool_t ProcessFile(TString filename, EProcessCommand_t processMask = kAll);
     void PrintStatus(TString prepend = "") const;
 
     Bool_t RegisterValue(TString name, value_t value = "...");

@@ -20,7 +20,7 @@
 #include "TROOT.h"
 #include "TClass.h"
 
-#define PROCESSCOMMAND_VERBOSE 0
+#define PROCESSCOMMAND_VERBOSE 1
 
 namespace o2sim
 {
@@ -74,7 +74,7 @@ namespace o2sim
   /*****************************************************************/
 
   Bool_t
-  ConfigurationManager::ProcessCommand(TString command)
+  ConfigurationManager::ProcessCommand(TString command, EProcessCommand_t processMask)
   {
     /** process command **/
 
@@ -105,7 +105,7 @@ namespace o2sim
     /** add prepend command **/
     if (command.BeginsWith(".")) {
       command = fgPrependCommand + command;
-      return ProcessCommand(command);
+      return ProcessCommand(command, processMask);
     }
 
     /** change prepend command **/
@@ -130,7 +130,7 @@ namespace o2sim
 #if PROCESSCOMMAND_VERBOSE
 	  std::cout << "[" << this->ClassName() << "]" << " forward to \"" << value << "\" delegate: \"" << command << "\"" << std::endl;
 #endif
-	  retval &= delegate->ProcessCommand(command); 
+	  retval &= delegate->ProcessCommand(command, processMask); 
 	}
 	return retval;
       }
@@ -138,11 +138,12 @@ namespace o2sim
 #if PROCESSCOMMAND_VERBOSE
       std::cout << "[" << this->ClassName() << "]" << " forward to \"" << value << "\" delegate: \"" << command << "\"" << std::endl;
 #endif
-      return GetDelegate(value)->ProcessCommand(command);
+      return GetDelegate(value)->ProcessCommand(command, processMask);
     }
 
     /** special delegate() command **/
     if (value.EqualTo("delegate()")) {
+      if (!(processMask & kDelegates)) return kTRUE;
       oa = args.Tokenize(" \t");
       if (oa->GetEntries() != 2) return kFALSE;
       TString delegate_name = ((TObjString *)oa->At(0))->GetString();
@@ -154,7 +155,6 @@ namespace o2sim
       std::cout << "[" << this->ClassName() << "]" << " delegate \"" << delegate_name << "\" to \"" << delegate_class_name << "\"" << std::endl;
 #endif      
       if (!delegate_class) return kFALSE;
-      delegate_class->Print();
       auto delegate = (ConfigurationManager *)delegate_class->New();
       if (!delegate) return kFALSE;
       return RegisterDelegate(delegate_name, delegate, delegate_class);
@@ -165,16 +165,18 @@ namespace o2sim
       oa = args.Tokenize(" \t");
       if (oa->GetEntries() != 1) return kFALSE;
       TString filename = ((TObjString *)oa->At(0))->GetString();
-      return ProcessFile(filename);
+      return ProcessFile(filename, processMask);
     }
-      
-    /** value modification **/
-#if PROCESSCOMMAND_VERBOSE
-    std::cout << "[" << this->ClassName() << "]" << " change \"" << value << "\" value: \"" << args << "\"" << std::endl;
-#endif
-    if (!ValidValue(value)) return kFALSE;
-    fValue[value] = args;
 
+    /** value modification **/
+    if (processMask & kValues) {
+#if PROCESSCOMMAND_VERBOSE
+      std::cout << "[" << this->ClassName() << "]" << " change \"" << value << "\" value: \"" << args << "\"" << std::endl;
+#endif
+      if (!ValidValue(value)) return kFALSE;
+      fValue[value] = args;
+    }
+    
     /** success **/
     NotifyUpdate(value, args);
     return kTRUE;
@@ -183,7 +185,7 @@ namespace o2sim
   /*****************************************************************/
 
   Bool_t
-  ConfigurationManager::ProcessFile(TString filename)
+  ConfigurationManager::ProcessFile(TString filename, EProcessCommand_t processMask)
   {
     /** process file **/
 
@@ -213,9 +215,13 @@ namespace o2sim
       if (line.size() <= 0) continue;
       /** process command **/
       TString command = line;
-      retval &= ProcessCommand(command);
+      if (!ProcessCommand(command, processMask)) {
+	LOG(ERROR) << "\"" << command << "\" is not a valid command" << std::endl;
+	return kFALSE;
+      }
     }
 
+    /** success **/
     return retval;
   }
   

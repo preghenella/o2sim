@@ -145,7 +145,12 @@ namespace o2sim
   {
     /** process file **/
 
-    return ConfigurationManager::ProcessFile(filename);
+    Bool_t retval = kTRUE;
+    /** process delegates **/ 
+    retval &= ConfigurationManager::ProcessFile(filename, kDelegates);
+    /** process values **/ 
+    retval &= ConfigurationManager::ProcessFile(filename, kValues);
+    return retval;
   }
 
   /*****************************************************************/

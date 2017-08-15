@@ -29,8 +29,8 @@ namespace o2sim {
     RunManager();
 
     /** methods **/
-    virtual Bool_t ProcessCommand(TString command) override;
-    Bool_t ProcessFile(TString filename) override;
+    virtual Bool_t ProcessCommand(TString command);
+    Bool_t ProcessFile(TString filename);
     void PrintStatus() const;
 
     Bool_t Init() const;
