@@ -48,6 +48,7 @@ namespace o2sim {
 
     /** methods **/
     virtual Bool_t ProcessCommand(TString command);
+    virtual Bool_t ProcessFile(TString filename);
     void PrintStatus(TString prepend = "") const;
 
     Bool_t RegisterValue(TString name, value_t value = "...");

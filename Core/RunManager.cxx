@@ -145,37 +145,9 @@ namespace o2sim
   {
     /** process file **/
 
-    /** open file **/
-    std::ifstream fin(filename.Data());
-    if (!fin.is_open()) {
-      LOG(ERROR) << "Cannot open file " << filename << std::endl;
-      return kFALSE;
-    }
-
-    /** process lines **/
-    std::string whitespace = " \t\f\v\n\r";
-    std::string comment = "#";
-    Bool_t retval = kTRUE;
-    for (std::string line; getline(fin, line);) {
-      /** remove comments **/
-      line = line.substr(0, line.find_first_of(comment));
-      if (line.size() <= 0) continue;
-      /** remove leading/trailing whitespaces **/
-      const auto line_begin = line.find_first_not_of(whitespace);
-      const auto line_end = line.find_last_not_of(whitespace);
-      if (line_begin == std::string::npos ||
-	  line_end == std::string::npos) continue;
-      const auto line_range = line_end - line_begin + 1;
-      line = line.substr(line_begin, line_range);
-      if (line.size() <= 0) continue;
-      /** process command **/
-      TString command = line;
-      retval &= ProcessCommand(command);
-    }
-
-    return retval;
+    return ConfigurationManager::ProcessFile(filename);
   }
-  
+
   /*****************************************************************/
 
   void

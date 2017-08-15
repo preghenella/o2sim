@@ -16,6 +16,7 @@
 #include "TObjString.h"
 #include <iostream>
 #include <iomanip>
+#include "TSystem.h"
 #include "TROOT.h"
 #include "TClass.h"
 
@@ -140,7 +141,7 @@ namespace o2sim
       return GetDelegate(value)->ProcessCommand(command);
     }
 
-    /** special commands **/
+    /** special delegate() command **/
     if (value.EqualTo("delegate()")) {
       oa = args.Tokenize(" \t");
       if (oa->GetEntries() != 2) return kFALSE;
@@ -159,6 +160,14 @@ namespace o2sim
       return RegisterDelegate(delegate_name, delegate, delegate_class);
     }
       
+    /** special include() command **/
+    if (value.EqualTo("include()")) {
+      oa = args.Tokenize(" \t");
+      if (oa->GetEntries() != 1) return kFALSE;
+      TString filename = ((TObjString *)oa->At(0))->GetString();
+      return ProcessFile(filename);
+    }
+      
     /** value modification **/
 #if PROCESSCOMMAND_VERBOSE
     std::cout << "[" << this->ClassName() << "]" << " change \"" << value << "\" value: \"" << args << "\"" << std::endl;
@@ -171,6 +180,45 @@ namespace o2sim
     return kTRUE;
   }
 
+  /*****************************************************************/
+
+  Bool_t
+  ConfigurationManager::ProcessFile(TString filename)
+  {
+    /** process file **/
+
+    /** open file **/
+    gSystem->ExpandPathName(filename);
+    std::ifstream fin(filename.Data());
+    if (!fin.is_open()) {
+      LOG(ERROR) << "Cannot open file " << filename << std::endl;
+      return kFALSE;
+    }
+
+    /** process lines **/
+    std::string whitespace = " \t\f\v\n\r";
+    std::string comment = "#";
+    Bool_t retval = kTRUE;
+    for (std::string line; getline(fin, line);) {
+      /** remove comments **/
+      line = line.substr(0, line.find_first_of(comment));
+      if (line.size() <= 0) continue;
+      /** remove leading/trailing whitespaces **/
+      const auto line_begin = line.find_first_not_of(whitespace);
+      const auto line_end = line.find_last_not_of(whitespace);
+      if (line_begin == std::string::npos ||
+	  line_end == std::string::npos) continue;
+      const auto line_range = line_end - line_begin + 1;
+      line = line.substr(line_begin, line_range);
+      if (line.size() <= 0) continue;
+      /** process command **/
+      TString command = line;
+      retval &= ProcessCommand(command);
+    }
+
+    return retval;
+  }
+  
   /*****************************************************************/
 
   void
