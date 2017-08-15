@@ -17,10 +17,16 @@
 #include <iostream>
 #include <iomanip>
 
+#define PROCESSCOMMAND_VERBOSE 0
+
 namespace o2sim
 {
 
   /*****************************************************************/
+  /*****************************************************************/
+
+  TString ConfigurationManager::fgPrependCommand;
+  
   /*****************************************************************/
 
   ConfigurationManager::ConfigurationManager() :
@@ -68,36 +74,72 @@ namespace o2sim
   {
     /** process command **/
 
+    /** initial adjustments **/
     TObjArray *oa = command.Tokenize(" \t");
     TString name = ((TObjString *)oa->At(0))->GetString();
     TString args;
-    for (Int_t i = 1; i < oa->GetEntries(); i++) {
-      if (i != 1) args += " ";
-      args += ((TObjString *)oa->At(i))->GetString();
+    for (Int_t i = 0; i < oa->GetEntries(); i++) {
+      if (i == 0) {
+	command = ((TObjString *)oa->At(i))->GetString();
+	continue;
+      }
+      command += " " + ((TObjString *)oa->At(i))->GetString();
+      if (i == 1) {
+	args = ((TObjString *)oa->At(i))->GetString();
+	continue;
+      }
+      args += " " + ((TObjString *)oa->At(i))->GetString();
     }
     oa = name.Tokenize(".");
+    TString value = ((TObjString *)oa->At(0))->GetString();
+
+#if PROCESSCOMMAND_VERBOSE
+    std::cout << "[" << this->ClassName() << "]" << " process command \"" << command << "\"" << std::endl;
+#endif
     
+    /** add prepend command **/
+    if (command.BeginsWith(".")) {
+      command = fgPrependCommand + command;
+      return ProcessCommand(command);
+    }
+
+    /** change prepend command **/
+    if (args.IsNull()) {
+      fgPrependCommand = command;
+#if PROCESSCOMMAND_VERBOSE
+      std::cout << "[" << this->ClassName() << "[" << " change prepend: " << fgPrependCommand << std::endl;
+#endif
+      return kTRUE;
+    }
+
     /** commands to be forwarded to delegate **/
     if (oa->GetEntries() > 1) {
-      TString delegate = ((TObjString *)oa->At(0))->GetString();
-      command.Remove(0, delegate.Sizeof());
+      command.Remove(0, value.Sizeof());
       /** send command to all delegates **/
-      if (delegate.EqualTo("*")) {
+      if (value.EqualTo("*")) {
 	Bool_t retval = kTRUE;
 	/** loop over all delegates **/
 	for (auto const &x : DelegateMap()) {
-	  auto delegate_ptr = x.second;
-	  if (!delegate_ptr) continue;
-	  retval &= delegate_ptr->ProcessCommand(command); 
+	  auto delegate = x.second;
+	  if (!delegate) continue;
+#if PROCESSCOMMAND_VERBOSE
+	  std::cout << "[" << this->ClassName() << "]" << " forward to \"" << value << "\" delegate: \"" << command << "\"" << std::endl;
+#endif
+	  retval &= delegate->ProcessCommand(command); 
 	}
 	return retval;
       }
-      if (!fDelegate.count(delegate)) return kFALSE;
-      return fDelegate[delegate]->ProcessCommand(command);
+      if (!fDelegate.count(value)) return kFALSE;
+#if PROCESSCOMMAND_VERBOSE
+      std::cout << "[" << this->ClassName() << "]" << " forward to \"" << value << "\" delegate: \"" << command << "\"" << std::endl;
+#endif
+      return GetDelegate(value)->ProcessCommand(command);
     }
+    
     /** value modification **/
-    TString value = ((TObjString *)oa->At(0))->GetString();
-    command.Remove(0, value.Sizeof());
+#if PROCESSCOMMAND_VERBOSE
+    std::cout << "[" << this->ClassName() << "]" << " change \"" << value << "\" value: \"" << args << "\"" << std::endl;
+#endif
     if (!ValidValue(value)) return kFALSE;
     fValue[value] = args;
 

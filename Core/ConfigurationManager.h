@@ -67,6 +67,8 @@ namespace o2sim {
 
     value_map_t fValue;
     delegate_map_t fDelegate;
+
+    static TString fgPrependCommand;
     
     ClassDefOverride(ConfigurationManager, 1)
       
