@@ -32,10 +32,6 @@ namespace o2sim
     RegisterValue("diamond_xyz", "0., 0., 0.");
     RegisterValue("diamond_sigma_xyz", "0., 0., 0.");
     
-    /** register delegates **/
-    RegisterDelegate("pythia6", new GeneratorManagerPythia6()); 
-    RegisterDelegate("hijing", new GeneratorManagerHijing()); 
-    
   }
   
   /*****************************************************************/
@@ -64,6 +60,7 @@ namespace o2sim
 	LOG(ERROR) << "Failed initialising \"" << x.first << "\" manager" << std::endl;
 	return kFALSE;
       }
+      /** add generator **/
       primaryGenerator->AddGenerator(generator);
       LOG(INFO) << "Added generator from \"" << x.first << "\" delegate" << std::endl;
     }

@@ -20,6 +20,7 @@
 #include <iostream>
 
 class TString;
+class TClass;
 
 namespace o2sim {
 
@@ -56,7 +57,7 @@ namespace o2sim {
     Bool_t ParseValue(TString name, Int_t *ret, Int_t n) const;
     Bool_t IsValue(TString name, TString value) const {return GetValue(name).EqualTo(value);};
     
-    Bool_t RegisterDelegate(TString name, delegate_t *delegate);
+    Bool_t RegisterDelegate(TString name, delegate_t *delegate, TClass *delegate_class);
     delegate_t *GetDelegate(TString name) const {return fDelegate.at(name);};
     const delegate_map_t &DelegateMap() const {return fDelegate;};
 
@@ -67,7 +68,8 @@ namespace o2sim {
 
     value_map_t fValue;
     delegate_map_t fDelegate;
-
+    std::map<TString, TClass *> fDelegateClass;
+    
     static TString fgPrependCommand;
     
     ClassDefOverride(ConfigurationManager, 1)

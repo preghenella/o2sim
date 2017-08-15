@@ -16,6 +16,8 @@
 #include "TObjString.h"
 #include <iostream>
 #include <iomanip>
+#include "TROOT.h"
+#include "TClass.h"
 
 #define PROCESSCOMMAND_VERBOSE 0
 
@@ -34,7 +36,7 @@ namespace o2sim
   {
     /** deafult constructor **/
 
-    RegisterValue("status", "...");
+    RegisterValue("status", "active");
   }
   
   /*****************************************************************/
@@ -55,7 +57,7 @@ namespace o2sim
   /*****************************************************************/
 
   Bool_t
-  ConfigurationManager::RegisterDelegate(TString name, delegate_t *delegate)
+  ConfigurationManager::RegisterDelegate(TString name, delegate_t *delegate, TClass *delegate_class)
   {
     /** register delegate **/
 
@@ -64,6 +66,7 @@ namespace o2sim
       return kFALSE;
     }
     fDelegate[name] = delegate;
+    fDelegateClass[name] = delegate_class;
     return kTRUE;
   }
 
@@ -75,6 +78,7 @@ namespace o2sim
     /** process command **/
 
     /** initial adjustments **/
+    command.ReplaceAll(",", " ");
     TObjArray *oa = command.Tokenize(" \t");
     TString name = ((TObjString *)oa->At(0))->GetString();
     TString args;
@@ -135,7 +139,26 @@ namespace o2sim
 #endif
       return GetDelegate(value)->ProcessCommand(command);
     }
-    
+
+    /** special commands **/
+    if (value.EqualTo("delegate()")) {
+      oa = args.Tokenize(" \t");
+      if (oa->GetEntries() != 2) return kFALSE;
+      TString delegate_name = ((TObjString *)oa->At(0))->GetString();
+      TString delegate_class_name = ((TObjString *)oa->At(1))->GetString();
+      if (!delegate_class_name.BeginsWith("o2sim::"))
+	delegate_class_name = "o2sim::" + delegate_class_name;
+      TClass *delegate_class = gROOT->GetClass(delegate_class_name);
+#if PROCESSCOMMAND_VERBOSE
+      std::cout << "[" << this->ClassName() << "]" << " delegate \"" << delegate_name << "\" to \"" << delegate_class_name << "\"" << std::endl;
+#endif      
+      if (!delegate_class) return kFALSE;
+      delegate_class->Print();
+      auto delegate = (ConfigurationManager *)delegate_class->New();
+      if (!delegate) return kFALSE;
+      return RegisterDelegate(delegate_name, delegate, delegate_class);
+    }
+      
     /** value modification **/
 #if PROCESSCOMMAND_VERBOSE
     std::cout << "[" << this->ClassName() << "]" << " change \"" << value << "\" value: \"" << args << "\"" << std::endl;
@@ -162,9 +185,13 @@ namespace o2sim
     for (auto const &x : fValue) {
       std::cout << std::setw(width) << std::setfill(' ') << std::left << prepend + x.first << std::right << x.second << std::endl;
     }
-    for (auto const &x : fDelegate)
+    for (auto const &x : fDelegate) {
+      /** print only for active delegates **/
+      if (!x.second->IsActive()) continue;
+      std::cout << "### " << prepend + x.first << " delegate" << std::endl;
+      std::cout << std::setw(width) << std::setfill(' ') << std::left << prepend + "delegate()" << std::right << x.first << " " << fDelegateClass.at(x.first)->GetName() << std::endl;
       x.second->PrintStatus(prepend + x.first + ".");
-    
+    }
     
   }
   
@@ -177,7 +204,6 @@ namespace o2sim
 
     if (!ValidValue(name)) return kFALSE;
     TString str = GetValue(name);
-    str.ReplaceAll(",", " ");
     TObjArray *oa = str.Tokenize(" \t");
     if (oa->GetEntries() != n) return kFALSE;
     for (Int_t i = 0; i < n; i++) {
@@ -198,7 +224,6 @@ namespace o2sim
 
     if (!ValidValue(name)) return kFALSE;
     TString str = GetValue(name);
-    str.ReplaceAll(",", " ");
     TObjArray *oa = str.Tokenize(" \t");
     if (oa->GetEntries() != n) return kFALSE;
     for (Int_t i = 0; i < n; i++) {

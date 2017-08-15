@@ -29,10 +29,6 @@ namespace o2sim
 
     /** register values **/
 
-    /** register delegates **/
-    RegisterDelegate("cave", new ModuleManagerCave()); 
-    RegisterDelegate("tpc", new ModuleManagerTPC()); 
-    
   }
   
   /*****************************************************************/

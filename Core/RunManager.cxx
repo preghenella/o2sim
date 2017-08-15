@@ -28,19 +28,6 @@ namespace o2sim
   {
     /** deafult constructor **/
 
-    /** register values **/
-    
-    /** register delegates **/
-    RegisterDelegate("simulation", new SimulationManager()); 
-    RegisterDelegate("module", new ModuleManager()); 
-    RegisterDelegate("generator", new GeneratorManager()); 
-
-    /** default commands **/
-    ProcessCommand("status active");
-    ProcessCommand("simulation.status active");
-    ProcessCommand("module.status active");
-    ProcessCommand("generator.status active");
-    
   }
 
   /*****************************************************************/

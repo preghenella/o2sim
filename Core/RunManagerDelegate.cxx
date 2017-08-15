@@ -23,8 +23,6 @@ namespace o2sim
   {
     /** deafult constructor **/
 
-    /** register values **/
-
   }
 
   /*****************************************************************/

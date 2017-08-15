@@ -36,8 +36,6 @@ namespace o2sim
     RegisterValue("nevents", "1");
     RegisterValue("run_id", "0");
     
-    /** register delegates **/
-    
   }
   
   /*****************************************************************/
