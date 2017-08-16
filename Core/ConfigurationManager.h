@@ -40,7 +40,7 @@ namespace o2sim {
     ConfigurationManager();
 
     /** methods **/
-    Bool_t IsActive() const {return IsValue("status", "active");};
+    Bool_t IsActive() const {return IsValue("status", "active") || IsValue("status", "on");};
     
   protected:
 
