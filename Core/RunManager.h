@@ -31,6 +31,7 @@ namespace o2sim {
     /** methods **/
     virtual Bool_t ProcessCommand(TString command);
     Bool_t ProcessFile(TString filename);
+    Bool_t ProcessBuffer(std::vector<std::string> buffer);
     void PrintStatus() const;
 
     Bool_t Init() const;

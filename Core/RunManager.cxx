@@ -43,7 +43,9 @@ namespace o2sim
       LOG(FATAL) << "FairRunSim instance not created yet" << std::endl;
       return kFALSE;
     }
-   
+
+    /** process buffered commands **/
+    
     /** print status **/
     PrintStatus();
 
@@ -150,6 +152,26 @@ namespace o2sim
     retval &= ConfigurationManager::ProcessFile(filename, kDelegates);
     /** process values **/ 
     retval &= ConfigurationManager::ProcessFile(filename, kValues);
+    return retval;
+  }
+
+  /*****************************************************************/
+
+  Bool_t
+  RunManager::ProcessBuffer(std::vector<std::string> buffer)
+  {
+    /** process buffer **/
+
+    Bool_t retval = kTRUE;
+    /** process delegates **/
+    for (auto const &command : buffer) {
+      retval &= ConfigurationManager::ProcessCommand(command, kDelegates);
+    }
+    /** process values **/
+    for (auto const &command : buffer) {
+      retval &= ConfigurationManager::ProcessCommand(command, kValues);
+    }
+    /** return **/
     return retval;
   }
 
