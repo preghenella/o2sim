@@ -18,6 +18,7 @@
 
 #pragma link C++ class o2sim::GeneratorManager+;
 #pragma link C++ class o2sim::GeneratorManagerDelegate+;
+#pragma link C++ class o2sim::GeneratorManagerBox+;
 #pragma link C++ class o2sim::GeneratorManagerPythia6+;
 #pragma link C++ class o2sim::GeneratorManagerHijing+;
 

@@ -7,6 +7,7 @@ include_directories($ENV{HOME}/alice/AEGIS/THijing)
 set(SOURCES
     GeneratorManager.cxx
     GeneratorManagerDelegate.cxx
+    GeneratorManagerBox.cxx
     GeneratorManagerPythia6.cxx
     GeneratorManagerHijing.cxx
     )
@@ -14,6 +15,7 @@ set(SOURCES
 set(HEADERS
     GeneratorManager.h
     GeneratorManagerDelegate.h
+    GeneratorManagerBox.h
     GeneratorManagerPythia6.h
     GeneratorManagerHijing.h
     )
