@@ -165,7 +165,10 @@ namespace o2sim
       oa = args.Tokenize(" \t");
       if (oa->GetEntries() != 1) return kFALSE;
       TString filename = ((TObjString *)oa->At(0))->GetString();
-      return ProcessFile(filename, processMask);
+      TString prepend = fgPrependCommand;
+      Bool_t retval = ProcessFile(filename, processMask);
+      fgPrependCommand = prepend;
+      return retval;
     }
 
     /** value modification **/
