@@ -18,9 +18,7 @@
 #include "FairLogger.h"
 #include <map>
 #include <iostream>
-
-class TString;
-class TClass;
+#include "TClass.h"
 
 namespace o2sim {
 
@@ -72,6 +70,7 @@ namespace o2sim {
     delegate_t *GetDelegate(TString name) const {return fDelegate.at(name);};
     const delegate_map_t &DelegateMap() const {return fDelegate;};
 
+    TString GetDelegateClassName(TString name) const {return fDelegateClass.at(name)->GetName();};
     
     virtual void NotifyUpdate(TString value, TString args) {};
 

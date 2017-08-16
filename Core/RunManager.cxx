@@ -67,7 +67,7 @@ namespace o2sim
       auto delegate = dynamic_cast<RunManagerDelegate *>(x.second);
       if (!delegate || !delegate->IsActive()) continue;
       std::cout << std::string(80, '-') << std::endl;
-      LOG(INFO) << "Initialising \"" << x.first << "\" manager" << std::endl;
+      LOG(INFO) << "Initialising \"" << x.first << "\" manager (" << GetDelegateClassName(x.first) << ")" << std::endl;
       if (!delegate->Init()) {
 	LOG(ERROR) << "Failed initialising \"" << x.first << "\" manager" << std::endl;
 	return kFALSE;
