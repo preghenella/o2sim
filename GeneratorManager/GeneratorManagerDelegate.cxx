@@ -40,13 +40,11 @@ namespace o2sim
     /** get beam P **/
 
     /** check value **/
-    TString value = GetValue(beam + "_P");
-    if (!value.IsDigit() && !value.IsFloat()) {
-      LOG(ERROR) << "Invalid " << beam << " momentum: " << value << std::endl;
+    if (!GetValue(beam + "_P", p)) {
+      LOG(ERROR) << "Invalid " << beam << " momentum: " << GetValue(beam + "_P") << std::endl;
       return kFALSE;
     }
     /** success **/
-    p = value.Atof();
     return kTRUE;
   }
     
@@ -59,7 +57,7 @@ namespace o2sim
 
     /** check values **/
     Int_t az[2];
-    if (!ParseValue(beam + "_AZ", az, 2)) {
+    if (!GetValue(beam + "_AZ", az, 2)) {
       LOG(ERROR) << "Cannot parse " << beam << " (A,Z): " << GetValue(beam + "_AZ") << std::endl;
       return kFALSE;
     }

@@ -38,7 +38,7 @@ namespace o2sim {
 
   protected:
 
-    Bool_t GetBeamP(TString beam, Double_t &p) const; 
+    Bool_t GetBeamP(TString beam, Double_t &p) const;
     Bool_t GetBeamAZ(TString beam, Int_t &a, Int_t &z) const;
     Bool_t GetBeamVector(TString beam, TLorentzVector &lv) const;
 

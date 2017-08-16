@@ -20,7 +20,7 @@
 #include "TROOT.h"
 #include "TClass.h"
 
-#define PROCESSCOMMAND_VERBOSE 1
+#define PROCESSCOMMAND_VERBOSE 0
 
 namespace o2sim
 {
@@ -252,19 +252,21 @@ namespace o2sim
   /*****************************************************************/
 
   Bool_t
-  ConfigurationManager::ParseValue(TString name, Double_t *ret, Int_t n) const
+  ConfigurationManager::GetValue(TString name, Int_t *v, Int_t n) const
   {
-    /** parse value **/
+    /** get value **/
 
+    /** check values **/
     if (!ValidValue(name)) return kFALSE;
     TString str = GetValue(name);
     TObjArray *oa = str.Tokenize(" \t");
     if (oa->GetEntries() != n) return kFALSE;
     for (Int_t i = 0; i < n; i++) {
       TObjString *os = (TObjString *)oa->At(i);
-      ret[i] = os->String().Atof();
+      TString val = os->String();
+      if (!val.IsFloat() && !val.IsDigit()) return kFALSE;
+      v[i] = val.Atoi();
     }
-
     /** success **/
     return kTRUE;
   }
@@ -272,19 +274,21 @@ namespace o2sim
   /*****************************************************************/
 
   Bool_t
-  ConfigurationManager::ParseValue(TString name, Int_t *ret, Int_t n) const
+  ConfigurationManager::GetValue(TString name, Double_t *v, Int_t n) const
   {
-    /** parse value **/
+    /** get value **/
 
+    /** check values **/
     if (!ValidValue(name)) return kFALSE;
     TString str = GetValue(name);
     TObjArray *oa = str.Tokenize(" \t");
     if (oa->GetEntries() != n) return kFALSE;
     for (Int_t i = 0; i < n; i++) {
       TObjString *os = (TObjString *)oa->At(i);
-      ret[i] = os->String().Atoi();
+      TString val = os->String();
+      if (!val.IsFloat() && !val.IsDigit()) return kFALSE;
+      v[i] = val.Atof();
     }
-
     /** success **/
     return kTRUE;
   }

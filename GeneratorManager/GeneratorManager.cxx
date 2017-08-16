@@ -113,12 +113,12 @@ namespace o2sim
     /** parse interaction diamond xyz, sigma_xyz **/
     Double_t xyz[3], sigma_xyz[3];
     TString name = "diamond_xyz";
-    if (!ParseValue(name, xyz, 3)) {
+    if (!GetValue(name, xyz, 3)) {
       LOG(FATAL) << "Cannot parse \"" << name << "\": " << GetValue(name) << std::endl;
       return kFALSE;
     }
     name = "diamond_sigma_xyz";
-    if (!ParseValue(name, sigma_xyz, 3)) {
+    if (!GetValue(name, sigma_xyz, 3)) {
       LOG(FATAL) << "Cannot parse \"" << name << "\": " << GetValue(name) << std::endl;
       return kFALSE;
     }

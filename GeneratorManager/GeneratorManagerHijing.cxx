@@ -59,7 +59,7 @@ namespace o2sim
     /** parse impact parameter range **/
     Double_t b[2];
     TString name = "b_range";
-    if (!ParseValue(name, b, 2)) {
+    if (!GetValue(name, b, 2)) {
       LOG(FATAL) << "Cannot parse \"" << name << "\": " << GetValue(name) << std::endl;
       return NULL;
     }

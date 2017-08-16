@@ -58,11 +58,14 @@ namespace o2sim {
     virtual Bool_t ProcessFile(TString filename, EProcessCommand_t processMask = kAll);
     void PrintStatus(TString prepend = "") const;
 
-    Bool_t RegisterValue(TString name, value_t value = "...");
-    value_t GetValue(TString name) const {return fValue.at(name);};
+    Bool_t RegisterValue(TString name, value_t value = "");
+
     Bool_t ValidValue(TString name) const {return fValue.count(name) == 1;};
-    Bool_t ParseValue(TString name, Double_t *ret, Int_t n) const;
-    Bool_t ParseValue(TString name, Int_t *ret, Int_t n) const;
+    value_t GetValue(TString name) const {return fValue.at(name);};
+    Bool_t GetValue(TString name, Double_t *v, Int_t n) const;
+    Bool_t GetValue(TString name, Int_t *v, Int_t n) const;
+    Bool_t GetValue(TString name, Int_t &v) const {return GetValue(name, &v, 1);};
+    Bool_t GetValue(TString name, Double_t &v) const {return GetValue(name, &v, 1);};
     Bool_t IsValue(TString name, TString value) const {return GetValue(name).EqualTo(value);};
     
     Bool_t RegisterDelegate(TString name, delegate_t *delegate, TClass *delegate_class);
