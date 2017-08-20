@@ -45,6 +45,8 @@ namespace o2sim {
     Bool_t GetCMSVector(TLorentzVector &lv) const;
     Bool_t GetCMSEnergy(Double_t &e) const;
     Bool_t GetCMSRapidity(Double_t &y) const;
+
+    Bool_t GetNumberOfEvents(Int_t &n) const;
     
   private:
 

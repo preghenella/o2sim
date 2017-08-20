@@ -29,6 +29,7 @@ namespace o2sim
     RegisterValue("target_P");
     RegisterValue("target_AZ");
     RegisterValue("trigger_mode");
+    RegisterValue("nevents", "1");
     RegisterValue("decay_table", "$O2SIM_ROOT/data/decaytable.dat");
 
   }
@@ -136,6 +137,24 @@ namespace o2sim
     return kTRUE;
   }
   
+  /*****************************************************************/
+
+  Bool_t
+  GeneratorManagerDelegate::GetNumberOfEvents(Int_t &n) const
+  {
+    /** get number of events **/
+
+    TString value = GetValue("nevents");
+    if (!value.IsDigit()) {
+      LOG(ERROR) << "Invalid number of events: " << value << std::endl;
+      return kFALSE;
+    }
+    /** success **/
+    n = value.Atoi();
+    return kTRUE;
+    
+  }
+
   /*****************************************************************/
   /*****************************************************************/
   
