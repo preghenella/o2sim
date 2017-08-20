@@ -27,11 +27,18 @@ namespace o2
 namespace eventgen
 {
 
+  class Trigger;
+  
   class GeneratorHepMC : public FairGenerator
   {
     
   public:
 
+    enum ETriggerMode_t {
+      kTriggerOR,
+      kTriggerAND
+    };
+    
     /** default constructor **/
     GeneratorHepMC();
     /** destructor **/
@@ -52,6 +59,8 @@ namespace eventgen
     /** setters **/
     void SetVersion(Int_t val) {fVersion = val;};
     void SetFileName(std::string val) {fFileName = val;};
+    void SetTriggerMode(ETriggerMode_t val) {fTriggerMode = val;};
+    void AddTrigger(Trigger *trigger);
     
   protected:
 
@@ -65,6 +74,9 @@ namespace eventgen
     Int_t fVersion;
     HepMC::Reader *fReader;
     HepMC::GenEvent *fEvent;
+    TObjArray *fTriggers;
+
+    ETriggerMode_t fTriggerMode;
     
     ClassDefOverride(GeneratorHepMC, 1);
   };

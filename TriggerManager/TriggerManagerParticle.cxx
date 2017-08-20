@@ -11,7 +11,7 @@
 /// \author R+Preghenella - August 2017
 
 #include "TriggerManagerParticle.h"
-#include "Generators/ParticleTrigger.h"
+#include "ParticleTrigger.h"
 
 namespace o2sim
 {
@@ -68,7 +68,7 @@ namespace o2sim
       }
       trigger->SetYRange(rapidity[0], rapidity[1]);
     }
-    
+
     /** success **/
     return trigger;
   }

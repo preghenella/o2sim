@@ -179,10 +179,30 @@ namespace o2sim
     /** create generator **/
     o2::eventgen::GeneratorHepMC *generator = new o2::eventgen::GeneratorHepMC();
     
+    /** trigger mode **/
+    o2::eventgen::Generator::ETriggerMode_t triggerMode = o2::eventgen::Generator::kTriggerOR;
+    if (IsValue("trigger_mode", "OR")) triggerMode = o2::eventgen::Generator::kTriggerOR;
+    if (IsValue("trigger_mode", "AND")) triggerMode = o2::eventgen::Generator::kTriggerAND;    
+    
     /** configure generator **/
     generator->SetVersion(2);
     generator->SetFileName(fifo_name);
     
+    /** loop over all delegates **/
+    for (auto const &x : DelegateMap()) {
+      auto delegate = dynamic_cast<TriggerManagerDelegate *>(x.second);
+      if (!delegate || !delegate->IsActive()) continue;
+      LOG(INFO) << "Initialising \"" << x.first << "\" manager (" << GetDelegateClassName(x.first) << ")" << std::endl;
+      auto trigger = delegate->Init();      
+      if (!trigger) {
+	LOG(ERROR) << "Failed initialising \"" << x.first << "\" manager" << std::endl;
+	return NULL;
+      }
+      /** add trigger **/
+      generator->AddTrigger(trigger);
+      LOG(INFO) << "Added trigger from \"" << x.first << "\" delegate" << std::endl;
+    }
+
     /** fork **/
     Int_t pid = fork();
     if (pid == 0) {

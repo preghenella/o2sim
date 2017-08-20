@@ -11,6 +11,7 @@
 /// \author R+Preghenella - August 2017
 
 #include "GeneratorHepMC.h"
+#include "TriggerManager/Trigger.h"
 #include "FairLogger.h"
 #include "FairPrimaryGenerator.h"
 #include "HepMC/ReaderAscii.h"
@@ -28,16 +29,21 @@ namespace eventgen
   /*****************************************************************/
 
   GeneratorHepMC::GeneratorHepMC() :
-    FairGenerator("ALICEo2", "ALICEo2 HepMC Event Generator"),
+    FairGenerator("ALICEo2", "ALICEo2 HepMC Generator"),
     fStream(),
     fFileName(),
     fVersion(3),
     fReader(NULL),
-    fEvent(NULL)
+    fEvent(NULL),
+    fTriggers(NULL),
+    fTriggerMode(kTriggerOR)
   {
     /** default constructor **/
 
     fEvent = new HepMC::GenEvent();
+    fTriggers = new TObjArray();
+    //    fTriggers->SetOwner(kTRUE);
+    
   }
 
   /*****************************************************************/
@@ -52,8 +58,19 @@ namespace eventgen
       delete fReader;
     }
     if (fEvent) delete fEvent;
+    //    if (fTriggers) delete fTriggers;
   }
 
+  /*****************************************************************/
+
+  void
+  GeneratorHepMC::AddTrigger(Trigger *trigger)
+  {
+    /** add trigger **/
+
+    fTriggers->Add(trigger);
+  }
+  
   /*****************************************************************/
 
   Bool_t
@@ -63,15 +80,41 @@ namespace eventgen
 
     /** check reader **/
     if (!fReader) return kFALSE;
-    
-    /** clear and read event **/
-    fEvent->clear();
-    fReader->read_event(*fEvent);
-    if(fReader->failed()) return kFALSE;
-    
-    /** set units to desired output **/
-    fEvent->set_units(HepMC::Units::GEV, HepMC::Units::CM);
+
+    /** generate and trigger loop **/
+    Bool_t triggered;
+    Int_t nAttempts = 0;
+    do {
+
+      nAttempts++;
+      if (nAttempts % 1000 == 0)
+	LOG(WARNING) << "Large number of trigger Attempts: " << nAttempts << std::endl;
       
+      /** clear and read event **/
+      fEvent->clear();
+      fReader->read_event(*fEvent);
+      if(fReader->failed()) return kFALSE;      
+      /** set units to desired output **/
+      fEvent->set_units(HepMC::Units::GEV, HepMC::Units::CM);
+
+      /** trigger event **/
+      if (fTriggers->GetEntries() == 0) break; // no trigger applied
+      if (fTriggerMode == kTriggerOR) triggered = kFALSE;
+      else if (fTriggerMode == kTriggerAND) triggered = kTRUE;
+      else break; // unkown trigger mode
+      /** loop over triggers **/
+      for (Int_t itrigger = 0; itrigger < fTriggers->GetEntries(); itrigger++) {
+	auto trigger = dynamic_cast<Trigger *>(fTriggers->At(itrigger));
+	if (!trigger) continue;
+	Bool_t retval = trigger->TriggerEvent(fEvent);
+	if (fTriggerMode == kTriggerOR) triggered |= retval;
+	if (fTriggerMode == kTriggerAND) triggered &= retval;
+      } /** and of loop over triggers **/
+      
+    } while (!triggered); /** end of generate and trigger loop **/
+
+    /** add particles **/
+    
     /** loop over particles **/
     auto particles = fEvent->particles();
     for (auto const &particle : particles) {
@@ -83,31 +126,31 @@ namespace eventgen
       auto vertex = particle->production_vertex()->position();
       auto parents = particle->parents(); // less efficient than via vertex
       auto children = particle->children(); // less efficient than via vertex
-
+      
       /** get momentum information **/
       auto px = momentum.x();
       auto py = momentum.y();
       auto pz = momentum.z();
       auto et = momentum.t();
-
+      
       /** get vertex information **/
       auto vx = vertex.x();
       auto vy = vertex.y();
       auto vz = vertex.z();
       auto vt = vertex.t();
-
+      
       /** get mother information **/
       auto mm = parents.empty() ? -1 : parents.back()->id() - 1; // not obvious why reversed
-
+      
       /** get weight information [WIP] **/
       auto ww = 1.;
-
+      
       /** set want tracking [WIP] **/
       auto wt = (st == 1 || children.empty());
       
       /* add track */
       primGen->AddTrack(pdg, px, py, pz, vx, vy, vz, mm, wt, et, vt, ww);
-
+      
     } /** end of loop over particles **/
     
     /** success **/
