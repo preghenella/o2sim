@@ -13,6 +13,7 @@ target_link_libraries(o2sim
 		      o2simSimulationManager
 		      o2simModuleManager
 		      o2simGeneratorManager
+		      o2simTriggerManager
 		      ${Boost_PROGRAM_OPTIONS_LIBRARY}
 		      )
 

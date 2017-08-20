@@ -28,6 +28,7 @@ namespace o2sim
     RegisterValue("projectile_AZ");
     RegisterValue("target_P");
     RegisterValue("target_AZ");
+    RegisterValue("trigger_mode");
     RegisterValue("decay_table", "$O2SIM_ROOT/data/decaytable.dat");
 
   }
