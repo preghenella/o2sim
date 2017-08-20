@@ -12,7 +12,7 @@
 
 #include "GeneratorManagerPythia6.h"
 #include "TriggerManager/TriggerManagerDelegate.h"
-#include "Generators/Generator.h"
+#include "Generator.h"
 #include "TPythia6.h"
 #include "TPythia6Decayer.h"
 #include "TSystem.h"
@@ -130,7 +130,6 @@ namespace o2sim
     
     /** configure generator **/
     generator->SetGenerator(py6);
-    //    generator->SetHepMC(HepMCfilename);
     generator->SetTriggerMode(triggerMode);
     //    generator->SetNumberOfEvents(nevents);
     

@@ -11,7 +11,7 @@
 /// \author R+Preghenella - August 2017
 
 #include "GeneratorManagerHijing.h"
-#include "Generators/Generator.h"
+#include "Generator.h"
 #include "THijing.h"
 #include "TSystem.h"
 
