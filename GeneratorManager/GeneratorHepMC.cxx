@@ -11,7 +11,7 @@
 /// \author R+Preghenella - August 2017
 
 #include "GeneratorHepMC.h"
-#include "TriggerManager/Trigger.h"
+#include "TriggerManager/TriggerHepMC.h"
 #include "FairLogger.h"
 #include "FairPrimaryGenerator.h"
 #include "HepMC/ReaderAscii.h"
@@ -88,7 +88,7 @@ namespace eventgen
 
       nAttempts++;
       if (nAttempts % 1000 == 0)
-	LOG(WARNING) << "Large number of trigger Attempts: " << nAttempts << std::endl;
+	LOG(WARNING) << "Large number of trigger attempts: " << nAttempts << std::endl;
       
       /** clear and read event **/
       fEvent->clear();
@@ -104,8 +104,11 @@ namespace eventgen
       else break; // unkown trigger mode
       /** loop over triggers **/
       for (Int_t itrigger = 0; itrigger < fTriggers->GetEntries(); itrigger++) {
-	auto trigger = dynamic_cast<Trigger *>(fTriggers->At(itrigger));
-	if (!trigger) continue;
+	auto trigger = dynamic_cast<TriggerHepMC *>(fTriggers->At(itrigger));
+	if (!trigger) {
+	  LOG(ERROR) << "Incompatile trigger for HepMC interface" << std::endl;
+	  return kFALSE;
+	}
 	Bool_t retval = trigger->TriggerEvent(fEvent);
 	if (fTriggerMode == kTriggerOR) triggered |= retval;
 	if (fTriggerMode == kTriggerAND) triggered &= retval;

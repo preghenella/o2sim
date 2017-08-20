@@ -8,12 +8,7 @@
 // granted to it by virtue of its status as an Intergovernmental Organization
 // or submit itself to any jurisdiction.
 
-#include "Trigger.h"
-#include "FairLogger.h"
-#include "TClonesArray.h"
-#include "TGenerator.h"
-#include "TParticle.h"
-#include "TRandom.h"
+#include "TriggerTGenerator.h"
 
 namespace o2
 {
@@ -23,36 +18,32 @@ namespace eventgen
   /*****************************************************************/
   /*****************************************************************/
 
-  Trigger::Trigger() :
-    TNamed("ALICEo2", "ALICEo2 Generator Trigger"),
-    fDownscale(1.),
-    fNumberOfTimeSlots(1),
-    fActiveTimeSlot(0),
-    fTimeSlot(0)
+  TriggerTGenerator::TriggerTGenerator() :
+    Trigger()
   {
-    /** default contructor **/
+    /** default constructor **/
   }
 
   /*****************************************************************/
-  
-  Trigger::~Trigger()
+
+  TriggerTGenerator::~TriggerTGenerator()
   {
     /** default destructor **/
   }
-
-  /*****************************************************************/
   
+  /*****************************************************************/
+
   Bool_t
-  Trigger::IsActive()
+  TriggerTGenerator::TriggerEvent(TClonesArray *particles, TGenerator *generator)
   {
     /** trigger event **/
 
-    /** check active time slot **/
-    if (fTimeSlot != fActiveTimeSlot) {
-      fTimeSlot = (fTimeSlot + 1) % fNumberOfTimeSlots;
-      return kFALSE;
-    }
-    fTimeSlot = (fTimeSlot + 1) % fNumberOfTimeSlots;
+    /** check active **/
+    if (!IsActive()) return kFALSE;
+    /* trigger */
+    if (!IsTriggered(particles, generator)) return kFALSE;
+    /* downscale */
+    if (IsDownscaled()) return kFALSE;
 
     /** success **/
     return kTRUE;

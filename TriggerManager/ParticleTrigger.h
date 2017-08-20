@@ -13,7 +13,8 @@
 #ifndef ALICEO2_EVENTGEN_PARTICLETRIGGER_H_
 #define ALICEO2_EVENTGEN_PARTICLETRIGGER_H_
 
-#include "Trigger.h"
+#include "TriggerHepMC.h"
+#include "TriggerTGenerator.h"
 
 namespace o2
 {
@@ -23,7 +24,7 @@ namespace eventgen
   /*****************************************************************/
   /*****************************************************************/
 
-  class ParticleTrigger : public Trigger
+  class ParticleTrigger : public TriggerHepMC, public TriggerTGenerator
   {
     
   public:

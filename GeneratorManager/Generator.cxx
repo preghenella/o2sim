@@ -9,7 +9,7 @@
 // or submit itself to any jurisdiction.
 
 #include "Generator.h"
-#include "TriggerManager/Trigger.h"
+#include "TriggerManager/TriggerTGenerator.h"
 #include "FairLogger.h"
 #include "FairPrimaryGenerator.h"
 #include "TGenerator.h"
@@ -78,10 +78,15 @@ namespace eventgen
 
     /** loop over number of events **/
     for (Int_t iev = 0; iev < fNumberOfEvents; iev++) {
-
+      
       /** generate and trigger event **/
       Bool_t triggered = fTriggers->GetEntries() == 0;
+      Int_t nAttempts = 0;
       do {
+	
+	nAttempts++;
+	if (nAttempts % 1000 == 0)
+	  LOG(WARNING) << "Large number of trigger attempts: " << nAttempts << std::endl;
 	
 	/** generate event **/
 	fGenerator->GenerateEvent();
@@ -92,8 +97,11 @@ namespace eventgen
 	if (fTriggerMode == kTriggerAND) triggered = kTRUE;
 	if (fTriggers->GetEntries() == 0) triggered = kTRUE;
 	for (Int_t itrigger = 0; itrigger < fTriggers->GetEntries(); itrigger++) {
-	  auto trigger = dynamic_cast<Trigger *>(fTriggers->At(itrigger));
-	  if (!trigger) continue;
+	  auto trigger = dynamic_cast<TriggerTGenerator *>(fTriggers->At(itrigger));
+	  if (!trigger) {
+	    LOG(ERROR) << "Incompatile trigger for TGenerator interface" << std::endl;
+	    return kFALSE;
+	  }
 	  Bool_t retval = trigger->TriggerEvent(fParticles, fGenerator);
 	  if (fTriggerMode == kTriggerOR) triggered |= retval;
 	  if (fTriggerMode == kTriggerAND) triggered &= retval;

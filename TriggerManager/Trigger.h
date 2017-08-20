@@ -28,17 +28,15 @@ namespace o2
 namespace eventgen
 {
 
-  class Trigger : public TNamed
+  class Trigger : public virtual TNamed
   {
     
   public:
     
     /** default constructor **/
     Trigger();
-    /** constructor with name and title **/
-    Trigger(const Char_t *name, const Char_t *title = "ALICEo2 Generator Trigger");
     /** destructor **/
-    //      virtual ~Trigger();
+    virtual ~Trigger();
 
     /** getters **/
     Double_t GetDownscale() const {return fDownscale;};
@@ -50,20 +48,12 @@ namespace eventgen
     void SetNumberOfTimeSlots(UInt_t val) {fNumberOfTimeSlots = val;};
     void SetActiveTimeSlot(UInt_t val) {fActiveTimeSlot = val;};
 
-    /** methods **/
-    Bool_t TriggerEvent(TClonesArray *particles, TGenerator *generator);
-    Bool_t TriggerEvent(HepMC::GenEvent *event);
-        
   protected:
     
     /** copy constructor **/
     Trigger(const Trigger &);
     /** operator= **/
     Trigger &operator=(const Trigger &);
-
-    /** methods **/
-    virtual Bool_t IsTriggered(TClonesArray *particles, TGenerator *generator) const = 0;
-    virtual Bool_t IsTriggered(HepMC::GenEvent *event) const = 0;
 
     /** methods **/
     Bool_t IsActive();

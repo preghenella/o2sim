@@ -17,6 +17,8 @@
 #pragma link off all functions;
 
 #pragma link C++ class o2::eventgen::Trigger+;
+#pragma link C++ class o2::eventgen::TriggerHepMC+;
+#pragma link C++ class o2::eventgen::TriggerTGenerator+;
 #pragma link C++ class o2::eventgen::ParticleTrigger+;
 
 #pragma link C++ class o2sim::TriggerManagerDelegate+;
