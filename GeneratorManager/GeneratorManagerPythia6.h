@@ -14,6 +14,7 @@
 #define ALICEO2SIM_GENERATORMANAGERPYTHIA6_H_
 
 #include "GeneratorManagerDelegate.h"
+#include <fstream>
 
 class TPythia6;
 
@@ -50,9 +51,15 @@ namespace o2sim {
     Bool_t Terminate() const override;
     
   private:
+    
+    Bool_t ConfigureBaseline(std::ostream &config) const;
+    Bool_t ConfigureProcess(std::ostream &config) const;
 
-    Bool_t ConfigureBaseline(TPythia6 *py6) const;
-    Bool_t ConfigureProcess(TPythia6 *py6) const;
+    FairGenerator *InitTPythia6(std::string &configFileName) const;
+    FairGenerator *InitAGILe(std::string &configFileName) const;
+
+    Bool_t TerminateTPythia6() const;
+    Bool_t TerminateAGILe() const;
     
     ClassDefOverride(GeneratorManagerPythia6, 1)
       

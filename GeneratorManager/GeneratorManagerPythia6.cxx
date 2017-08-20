@@ -11,10 +11,16 @@
 /// \author R+Preghenella - August 2017
 
 #include "GeneratorManagerPythia6.h"
+#include "TriggerManager/TriggerManagerDelegate.h"
 #include "Generators/Generator.h"
 #include "TPythia6.h"
 #include "TPythia6Decayer.h"
 #include "TSystem.h"
+#include "GeneratorHepMC.h"
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <cstdio>
 
 namespace o2sim
 {
@@ -27,8 +33,10 @@ namespace o2sim
   {
     /** deafult constructor **/
 
+    /** register values **/
     RegisterValue("process", "minimum bias");
     RegisterValue("tune", "perugia 2011");
+    RegisterValue("interface", "TPythia6");
   }
 
   /*****************************************************************/
@@ -38,56 +46,175 @@ namespace o2sim
   {
     /** init **/
 
-    /** configure and initialise pythia6 interface **/
-    gSystem->Load("libpythia6");
-    TPythia6 *py6 = TPythia6::Instance();
-    if (!py6) return NULL;
-    
     /** get energy **/
     Double_t energy;
     if (!GetCMSEnergy(energy)) return NULL;
+    
+    /** create config file **/
+    std::string configFileName = "Pythia6." + std::string(GetName()) + ".param";
+    std::ofstream config(configFileName, std::ofstream::out);
+    /** configure **/
+    config << "RG:Beam1 p+" << std::endl;
+    config << "RG:Beam2 p+" << std::endl;
+    config << "RG:Mom1 " << 0.5 * energy << std::endl;
+    config << "RG:Mom2 " << 0.5 * energy << std::endl;
+    ConfigureBaseline(config);
+    ConfigureProcess(config);
+    /** close config **/
+    config.close();
+    
+    /** number of events **/
+    Int_t nevents;
+    if (!GetNumberOfEvents(nevents)) return NULL;
 
-    /** configure and initialise **/
-    ConfigureBaseline(py6);
-    ConfigureProcess(py6);
-    py6->Initialize("CMS", "p+", "p+", energy);
-
-    /** decayer **/
-    TPythia6Decayer *py6d = TPythia6Decayer::Instance();
-    TString decay_table = GetValue("decay_table");
-    if (gSystem->ExpandPathName(decay_table)) {
-      LOG(FATAL) << "Cannot expand \"" << "decay_table" << "\": " << decay_table << std::endl;
-      return NULL;
-    }
-    if (gSystem->AccessPathName(decay_table, EAccessMode::kFileExists)) {
-      LOG(FATAL) << "Cannot access decay table: " << decay_table << std::endl;
-      return NULL;
-    }
-    py6d->SetDecayTableFile(decay_table);
-    py6d->ReadDecayTable();
-    py6d->SetForceDecay(TPythia6Decayer::kNoDecay);
-
-    /** create generator **/ 
-    o2::eventgen::Generator *generator = new o2::eventgen::Generator();
-
-    /** configure generator **/
-    generator->SetGenerator(py6);
-
+    /** create generators **/
+    FairGenerator *generator = NULL;    
+    if (IsValue("interface", "TPythia6")) generator = InitTPythia6(configFileName);
+    else if (IsValue("interface", "AGILe")) generator = InitAGILe(configFileName);
+    else return NULL;
+    
     /** success **/
     return generator;
   }
   
   /*****************************************************************/
 
+  FairGenerator *
+  GeneratorManagerPythia6::InitTPythia6(std::string &configFileName) const
+  {
+    /** init TPythia6 **/
+
+    /** configure and initialise pythia6 interface **/
+    if (gSystem->Load("libpythia6") < 0) return NULL;
+    TPythia6 *py6 = TPythia6::Instance();
+    if (!py6) return NULL;
+
+    /** read configuration **/
+    TString projectile, target;
+    Double_t energy = 0.;
+    std::ifstream config(configFileName);
+    if (!config.is_open()) return NULL;
+    for (std::string line; getline(config, line);) {
+      TString str = line;
+      if (str.BeginsWith("RG:Beam1 ")) {
+	str.Remove(0, TString("RG:Beam1 ").Sizeof() - 1);
+	projectile = str;
+      }
+      else if (str.BeginsWith("RG:Beam2 ")) {
+	str.Remove(0, TString("RG:Beam2 ").Sizeof() - 1);
+	target = str;
+      }
+      if (str.BeginsWith("RG:Mom1 ")) {
+	str.Remove(0, TString("RG:Mom1 ").Sizeof() - 1);
+	energy += str.Atof();
+      }
+      else if (str.BeginsWith("RG:Mom2 ")) {
+	str.Remove(0, TString("RG:Mom2 ").Sizeof() - 1);
+	energy += str.Atof();
+      }
+      else if (str.BeginsWith("RG:")) continue;
+      else py6->Pygive(line.c_str());
+    }
+    config.close();
+    
+    /** initialise TPythia6 interface **/     
+    py6->Initialize("CMS", "p+", "p+", energy);
+    
+    /** create generator **/ 
+    o2::eventgen::Generator *generator = new o2::eventgen::Generator();
+    
+    /** trigger mode **/
+    o2::eventgen::Generator::ETriggerMode_t triggerMode = o2::eventgen::Generator::kTriggerOR;
+    if (IsValue("trigger_mode", "OR")) triggerMode = o2::eventgen::Generator::kTriggerOR;
+    if (IsValue("trigger_mode", "AND")) triggerMode = o2::eventgen::Generator::kTriggerAND;    
+    
+    /** configure generator **/
+    generator->SetGenerator(py6);
+    //    generator->SetHepMC(HepMCfilename);
+    generator->SetTriggerMode(triggerMode);
+    //    generator->SetNumberOfEvents(nevents);
+    
+    /** loop over all delegates **/
+    for (auto const &x : DelegateMap()) {
+      auto delegate = dynamic_cast<TriggerManagerDelegate *>(x.second);
+      if (!delegate || !delegate->IsActive()) continue;
+      LOG(INFO) << "Initialising \"" << x.first << "\" manager (" << GetDelegateClassName(x.first) << ")" << std::endl;
+      auto trigger = delegate->Init();      
+      if (!trigger) {
+	LOG(ERROR) << "Failed initialising \"" << x.first << "\" manager" << std::endl;
+	return NULL;
+      }
+      /** add trigger **/
+      generator->AddTrigger(trigger);
+      LOG(INFO) << "Added trigger from \"" << x.first << "\" delegate" << std::endl;
+    }
+
+    /** success **/
+    return generator;
+  }
+
+/*****************************************************************/
+
+  FairGenerator *
+  GeneratorManagerPythia6::InitAGILe(std::string &configFileName) const
+  {
+    /** init AGILe **/
+
+    /** create fifo **/
+    Char_t tmpname[1024];
+    strncpy(tmpname, GetName(), 1024);
+    std::string fifo_name = std::tmpnam(tmpname);
+    if (mkfifo(fifo_name.c_str(), 0666) < 0) {
+      LOG(ERROR) << "Could not create fifo: " << fifo_name << std::endl;
+      return NULL;
+    }
+
+    /** preparation **/
+    std::string agile_log = "AGILe." + std::string(GetName()) + ".log";
+    std::string o2sim_path = getenv("O2SIM_ROOT");
+    std::string agile_exe = "agile-pythia6.sh";
+    std::string agile_cmd = o2sim_path + "/scripts/" + agile_exe;
+    std::string agile_param = configFileName;
+    std::string agile_out = fifo_name;
+
+    /** create generator **/
+    o2::eventgen::GeneratorHepMC *generator = new o2::eventgen::GeneratorHepMC();
+    
+    /** configure generator **/
+    generator->SetVersion(2);
+    generator->SetFileName(fifo_name);
+    
+    /** fork **/
+    Int_t pid = fork();
+    if (pid == 0) {
+      /** redirect stdout/stderr **/
+      Int_t fd = open(agile_log.c_str(), O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
+      dup2(fd, STDOUT_FILENO);
+      dup2(fd, STDERR_FILENO);
+      close(fd);
+      /** execute agile-runmc **/
+      Int_t ret = execl(agile_cmd.c_str(), agile_exe.c_str(), agile_param.c_str(), agile_out.c_str(), NULL);
+      /** should not go here **/
+      std::cout << "Unexpected return from execl: " << ret << std::endl;
+      exit(1);
+    }
+
+    /** success **/
+    return generator;
+  }
+ 
+
+/*****************************************************************/
+
   Bool_t
   GeneratorManagerPythia6::Terminate() const
   {
     /** terminate **/
 
-    TPythia6 *py6 = TPythia6::Instance();
-    if (!py6) return kFALSE;
-    py6->Pystat(1);
-
+    if (IsValue("interface", "TPythia6")) return TerminateTPythia6();
+    else if (IsValue("interface", "AGILe")) return TerminateAGILe();
+    else return kFALSE;
+    
     /** success **/
     return kTRUE;
   }
@@ -95,7 +222,35 @@ namespace o2sim
   /*****************************************************************/
 
   Bool_t
-  GeneratorManagerPythia6::ConfigureBaseline(TPythia6 *py6) const
+  GeneratorManagerPythia6::TerminateTPythia6() const
+  {
+    /** terminate TPythia6 **/
+
+    TPythia6 *py6 = TPythia6::Instance();
+    if (!py6) return kFALSE;
+    py6->Pystat(1);
+    
+    /** success **/
+    return kTRUE;
+    
+  }
+  
+  /*****************************************************************/
+
+  Bool_t
+  GeneratorManagerPythia6::TerminateAGILe() const
+  {
+    /** terminate AGILe **/
+
+    /** success **/
+    return kTRUE;
+    
+  }
+  
+  /*****************************************************************/
+
+  Bool_t
+  GeneratorManagerPythia6::ConfigureBaseline(std::ostream &config) const
   {
     /** configure baseline **/
 
@@ -125,9 +280,9 @@ namespace o2sim
     }
 
     /** config **/
-    py6->SetMSTP(5, tune);    // tune selection
-    py6->SetPMAS(4, 1, 1.275); // charm quark mass
-    py6->SetPMAS(5, 1, 4.66);  // beauty quark mass
+    config << "MSTP(5) = " << tune << std::endl;
+    config << "PMASS(4,1) = 1.275" << std::endl;
+    config << "PMASS(5,1) = 4.66" << std::endl;
     
     /** success **/
     return kTRUE;
@@ -136,13 +291,9 @@ namespace o2sim
   /*****************************************************************/
 
   Bool_t
-  GeneratorManagerPythia6::ConfigureProcess(TPythia6 *py6) const
+  GeneratorManagerPythia6::ConfigureProcess(std::ostream &config) const
   {
     /** configure process **/
-
-    /** reset subprocesses **/
-    for (Int_t isub = 0; isub < 200; isub++)
-      py6->SetMSUB(isub + 1, 0);
 
     /** parse process **/
     Int_t process = -1;
@@ -179,34 +330,52 @@ namespace o2sim
 
     /** select process **/
     switch (process) {
+
+      /*****************************************************************/      
       
     case kMinimumBias:
-      py6->SetMSEL(0);
-      py6->SetMSUB(92, 1); // Single diffractive (XB)
-      py6->SetMSUB(93, 1); // Single diffractive (AX)
-      py6->SetMSUB(94, 1); // Double  diffractive
-      py6->SetMSUB(95, 1); // Low-pT scattering
+
+      config << "MSEL = 0" << std::endl;
+      config << "MSUB(92) = 1" << std::endl;
+      config << "MSUB(93) = 1" << std::endl;
+      config << "MSUB(94) = 1" << std::endl;
+      config << "MSUB(95) = 1" << std::endl;
+
       return kTRUE;
+
+      /*****************************************************************/
 
     case kJets:
-      py6->SetMSEL(1); // QCD high-pT processes
-      //      py6->SetCKIN(3, fPtHardMin);
-      //      py6->SetCKIN(4, fPtHardMax);
-      //      py6->SetCKIN(7, fYMin);
-      //      py6->SetCKIN(8, fYMax);
+
+      config << "MSEL = 1" << std::endl;
+      
       return kTRUE;
 
+      /*****************************************************************/
+      
     case kDirectGamma:
-      py6->SetMSEL(10); // Prompt photon production
-      return kTRUE;
 
-    case kCharm:
-      py6->SetMSEL(4); // Heavy flavours (charm)
+      config << "MSEL = 10" << std::endl;
+      
       return kTRUE;
       
-    case kBeauty:
-      py6->SetMSEL(5); // Heavy flavours (beauty)
+      /*****************************************************************/
+      
+    case kCharm:
+      
+      config << "MSEL = 4" << std::endl;
+      
       return kTRUE;
+      
+      /*****************************************************************/
+      
+    case kBeauty:
+      
+      config << "MSEL = 5" << std::endl;
+      
+      return kTRUE;
+      
+      /*****************************************************************/
       
     default:
       LOG(ERROR) << "Unknown process ID: " << process << std::endl;
