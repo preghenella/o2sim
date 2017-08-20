@@ -47,7 +47,10 @@ namespace eventgen
     /** default destructor **/
 
     if (fStream.is_open()) fStream.close();
-    if (fReader) delete fReader;
+    if (fReader) {
+      fReader->close();
+      delete fReader;
+    }
     if (fEvent) delete fEvent;
   }
 
