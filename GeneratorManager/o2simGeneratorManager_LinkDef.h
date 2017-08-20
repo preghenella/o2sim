@@ -17,6 +17,7 @@
 #pragma link off all functions;
 
 #pragma link C++ class o2sim::GeneratorManager+;
+#pragma link C++ class o2::eventgen::GeneratorHepMC+;
 #pragma link C++ class o2sim::GeneratorManagerDelegate+;
 #pragma link C++ class o2sim::GeneratorManagerBox+;
 #pragma link C++ class o2sim::GeneratorManagerPythia6+;

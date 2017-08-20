@@ -2,7 +2,8 @@
 
 set(MODULE o2simGeneratorManager)
 
-include_directories($ENV{HOME}/alice/AEGIS/THijing)
+include_directories($ENV{HOME}/alice/AEGIS/THijing
+		    $ENV{HEPMC3_ROOT}/include)
 
 set(SOURCES
     GeneratorManager.cxx
@@ -10,6 +11,7 @@ set(SOURCES
     GeneratorManagerBox.cxx
     GeneratorManagerPythia6.cxx
     GeneratorManagerHijing.cxx
+    GeneratorHepMC.cxx
     )
    
 set(HEADERS
@@ -18,6 +20,7 @@ set(HEADERS
     GeneratorManagerBox.h
     GeneratorManagerPythia6.h
     GeneratorManagerHijing.h
+    GeneratorHepMC.h
     )
 		    
 O2SIM_GENERATE_LIBRARY()

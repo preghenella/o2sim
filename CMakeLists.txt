@@ -19,6 +19,7 @@ include_directories(
 link_directories(
 		 $ENV{FAIRROOT_ROOT}/lib
 		 $ENV{O2_ROOT}/lib
+		 $ENV{HEPMC3_ROOT}/lib
 		 )
 
 add_subdirectory(Core)
