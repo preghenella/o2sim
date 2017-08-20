@@ -13,7 +13,7 @@
 #ifndef ALICEO2SIM_CONFIGURATIONMANAGER_H_
 #define ALICEO2SIM_CONFIGURATIONMANAGER_H_
 
-#include "TObject.h"
+#include "TNamed.h"
 #include "TString.h"
 #include "FairLogger.h"
 #include <map>
@@ -25,7 +25,7 @@ namespace o2sim {
   /*****************************************************************/
   /*****************************************************************/
 
-  class ConfigurationManager : public TObject
+  class ConfigurationManager : public TNamed
   {
 
   public:
