@@ -33,10 +33,11 @@ namespace o2sim
   /*****************************************************************/
 
   ConfigurationManager::ConfigurationManager() :
-    TNamed()
+    TObject()
   {
     /** deafult constructor **/
 
+    RegisterValue("name");
     RegisterValue("status", "active");
   }
   
@@ -66,7 +67,7 @@ namespace o2sim
       printf(">>>>> %s delegate already exists \n ", name.Data());
       return kFALSE;
     }
-    delegate->SetName(name);
+    delegate->fValue["name"] = name; 
     fDelegate[name] = delegate;
     fDelegateClass[name] = delegate_class;
     return kTRUE;
