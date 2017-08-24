@@ -10,7 +10,7 @@ set(SOURCES
     GeneratorManager.cxx
     GeneratorManagerDelegate.cxx
     GeneratorManagerBox.cxx
-    GeneratorManagerPythia6.cxx
+    GeneratorManagerPythia.cxx
     GeneratorManagerHijing.cxx
     GeneratorHepMC.cxx
     )
@@ -20,7 +20,7 @@ set(HEADERS
     GeneratorManager.h
     GeneratorManagerDelegate.h
     GeneratorManagerBox.h
-    GeneratorManagerPythia6.h
+    GeneratorManagerPythia.h
     GeneratorManagerHijing.h
     GeneratorHepMC.h
     )
