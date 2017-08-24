@@ -140,10 +140,10 @@ namespace eventgen
       auto vx = vertex.x();
       auto vy = vertex.y();
       auto vz = vertex.z();
-      auto vt = vertex.t();
+      auto vt = vertex.t() * 3.33564095198152022e-11; // [cm -> s]
       
       /** get mother information **/
-      auto mm = parents.empty() ? -1 : parents.back()->id() - 1; // not obvious why reversed
+      auto mm = parents.empty() ? -1 : parents.front()->id() - 1;
       
       /** get weight information [WIP] **/
       auto ww = 1.;
