@@ -64,7 +64,7 @@ namespace o2sim {
     Bool_t GetValue(TString name, Int_t *v, Int_t n) const;
     Bool_t GetValue(TString name, Int_t &v) const {return GetValue(name, &v, 1);};
     Bool_t GetValue(TString name, Double_t &v) const {return GetValue(name, &v, 1);};
-    Bool_t IsValue(TString name, TString value) const {return GetValue(name).EqualTo(value);};
+    Bool_t IsValue(TString name, TString value, TString::ECaseCompare cmp = TString::kIgnoreCase) const {return GetValue(name).EqualTo(value, cmp);};
     Bool_t IsNull(TString name) const {return GetValue(name).IsNull();};
     
     Bool_t RegisterDelegate(TString name, delegate_t *delegate, TClass *delegate_class);
