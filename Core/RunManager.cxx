@@ -12,9 +12,9 @@
 
 #include "RunManager.h"
 #include "FairRunSim.h"
-#include "SimulationManager/SimulationManager.h"
-#include "ModuleManager/ModuleManager.h"
-#include "GeneratorManager/GeneratorManager.h"
+#include "Simulation/SimulationManager.h"
+#include "Module/ModuleManager.h"
+#include "Generator/GeneratorManager.h"
 #include <fstream>
 
 namespace o2sim

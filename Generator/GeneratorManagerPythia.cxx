@@ -11,8 +11,8 @@
 /// \author R+Preghenella - August 2017
 
 #include "GeneratorManagerPythia.h"
-#include "TriggerManager/TriggerManagerDelegate.h"
 #include "GeneratorHepMC.h"
+#include "Trigger/TriggerManagerDelegate.h"
 #include "TSystem.h"
 #include <unistd.h>
 #include <sys/types.h>

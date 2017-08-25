@@ -12,8 +12,6 @@
 
 #include "GeneratorManager.h"
 #include "GeneratorManagerDelegate.h"
-#include "GeneratorManagerPythia6.h"
-#include "GeneratorManagerHijing.h"
 #include "FairRunSim.h"
 #include "FairPrimaryGenerator.h"
 

@@ -9,7 +9,7 @@
 // or submit itself to any jurisdiction.
 
 #include "Generator.h"
-#include "TriggerManager/TriggerTGenerator.h"
+#include "Trigger/TriggerTGenerator.h"
 #include "FairLogger.h"
 #include "FairPrimaryGenerator.h"
 #include "TGenerator.h"

@@ -10,10 +10,10 @@ include_directories(${Boost_INCLUDE_DIRS})
 add_executable(o2sim ${SOURCES})
 target_link_libraries(o2sim
 		      o2simCore
-		      o2simSimulationManager
-		      o2simModuleManager
-		      o2simGeneratorManager
-		      o2simTriggerManager
+		      o2simSimulation
+		      o2simModule
+		      o2simGenerator
+		      o2simTrigger
 		      ${Boost_PROGRAM_OPTIONS_LIBRARY}
 		      )
 

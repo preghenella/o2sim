@@ -1,9 +1,6 @@
 # @author R+Preghenella - August 2017
 
-cmake_minimum_required(VERSION 3.0 FATAL_ERROR)
-project(o2sim)
-
-set(MODULE o2simSimulationManager)
+set(MODULE o2simSimulation)
 
 set(SOURCES
     SimulationManager.cxx

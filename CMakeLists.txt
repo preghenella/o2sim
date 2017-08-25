@@ -23,8 +23,8 @@ link_directories(
 		 )
 
 add_subdirectory(Core)
-add_subdirectory(SimulationManager)
-add_subdirectory(ModuleManager)
-add_subdirectory(GeneratorManager)
-add_subdirectory(TriggerManager)
+add_subdirectory(Simulation)
+add_subdirectory(Module)
+add_subdirectory(Generator)
+add_subdirectory(Trigger)
 add_subdirectory(o2sim)
