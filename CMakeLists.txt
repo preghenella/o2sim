@@ -3,7 +3,7 @@
 cmake_minimum_required(VERSION 3.0 FATAL_ERROR)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
-project(o2sim)
+project(ro2sim)
 
 list(APPEND CMAKE_PREFIX_PATH $ENV{ROOTSYS})
 find_package(ROOT REQUIRED COMPONENTS EGPythia6)
@@ -27,4 +27,4 @@ add_subdirectory(Simulation)
 add_subdirectory(Module)
 add_subdirectory(Generator)
 add_subdirectory(Trigger)
-add_subdirectory(o2sim)
+add_subdirectory(ro2sim)

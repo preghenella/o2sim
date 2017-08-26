@@ -1,6 +1,6 @@
 # @author R+Preghenella - August 2017
 
-set(MODULE o2simModule)
+set(MODULE ro2simModule)
 
 set(SOURCES
     ModuleManager.cxx

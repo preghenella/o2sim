@@ -1,6 +1,6 @@
 # @author R+Preghenella - August 2017
 
-set(MODULE o2simTrigger)
+set(MODULE ro2simTrigger)
 
 include_directories($ENV{HEPMC3_ROOT}/include)
 

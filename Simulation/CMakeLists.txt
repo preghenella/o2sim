@@ -1,6 +1,6 @@
 # @author R+Preghenella - August 2017
 
-set(MODULE o2simSimulation)
+set(MODULE ro2simSimulation)
 
 set(SOURCES
     SimulationManager.cxx

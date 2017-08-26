@@ -1,6 +1,6 @@
 # @author R+Preghenella - August 2017
 
-set(MODULE o2simCore)
+set(MODULE ro2simCore)
 
 set(SOURCES
     ConfigurationManager.cxx

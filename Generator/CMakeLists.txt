@@ -1,6 +1,6 @@
 # @author R+Preghenella - August 2017
 
-set(MODULE o2simGenerator)
+set(MODULE ro2simGenerator)
 
 include_directories($ENV{HOME}/alice/AEGIS/THijing
 		    $ENV{HEPMC3_ROOT}/include)
