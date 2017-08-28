@@ -75,7 +75,7 @@ namespace eventgen
     virtual Bool_t GenerateEvent() = 0;
     virtual Bool_t BoostEvent(Double_t boost) = 0;
     virtual Bool_t TriggerFired(Trigger *trigger) const = 0;
-    virtual Bool_t AcceptEvent(FairPrimaryGenerator *primGen) const = 0;
+    virtual Bool_t AddTracks(FairPrimaryGenerator *primGen) const = 0;
 
     /** methods **/
     virtual Bool_t AddHeader(PrimaryGenerator *primGen) const;

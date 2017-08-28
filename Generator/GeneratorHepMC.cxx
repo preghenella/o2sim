@@ -108,9 +108,9 @@ namespace eventgen
   /*****************************************************************/
 
   Bool_t
-  GeneratorHepMC::AcceptEvent(FairPrimaryGenerator *primGen) const
+  GeneratorHepMC::AddTracks(FairPrimaryGenerator *primGen) const
   {
-    /** accept event **/
+    /** add tracks **/
     
     /** loop over particles **/
     auto particles = fEvent->particles();

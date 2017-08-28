@@ -103,8 +103,18 @@ namespace eventgen
 
     } while (!TriggerEvent()); /** end of trigger loop **/
 
-    /** accept event **/
-    return AcceptEvent(primGen);
+    /** add tracks **/
+    if (!AddTracks(primGen)) return kFALSE;
+
+    /** setup header **/
+    fHeader->SetNumberOfAttempts(nAttempts);
+    
+    /** add header **/
+    auto o2primGen = dynamic_cast<PrimaryGenerator *>(primGen);
+    if (o2primGen && !AddHeader(o2primGen)) return kFALSE;
+
+    /** success **/
+    return kTRUE;
   }
 
   /*****************************************************************/

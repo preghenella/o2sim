@@ -57,7 +57,7 @@ namespace eventgen
     Bool_t GenerateEvent() override;
     Bool_t BoostEvent(Double_t boost) override;
     Bool_t TriggerFired(Trigger *trigger) const override;
-    Bool_t AcceptEvent(FairPrimaryGenerator *primGen) const override;
+    Bool_t AddTracks(FairPrimaryGenerator *primGen) const override;
     
     /** TGenerator interface **/
     TGenerator *fGenerator;

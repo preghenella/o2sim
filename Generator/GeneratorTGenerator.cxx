@@ -97,9 +97,9 @@ namespace eventgen
   /*****************************************************************/
   
   Bool_t
-  GeneratorTGenerator::AcceptEvent(FairPrimaryGenerator *primGen) const
+  GeneratorTGenerator::AddTracks(FairPrimaryGenerator *primGen) const
   {
-    /** accept event **/
+    /** add tracks **/
     
     /* loop over particles */
     Int_t nParticles = fParticles->GetEntries();
