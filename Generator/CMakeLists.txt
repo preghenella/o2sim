@@ -8,6 +8,8 @@ include_directories($ENV{HOME}/alice/AEGIS/THijing
 		    $ENV{HEPMC3_ROOT}/include)
 
 set(SOURCES
+    MCEventHeader.cxx
+    PrimaryGenerator.cxx
     Generator.cxx
     GeneratorHepMC.cxx
     GeneratorManager.cxx
@@ -17,6 +19,8 @@ set(SOURCES
     )
    
 set(HEADERS
+    MCEventHeader.h
+    PrimaryGenerator.h
     Generator.h
     GeneratorHepMC.h
     GeneratorManager.h

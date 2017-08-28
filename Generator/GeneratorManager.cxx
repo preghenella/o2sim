@@ -11,6 +11,7 @@
 /// \author R+Preghenella - August 2017
 
 #include "GeneratorManager.h"
+#include "MCEventHeader.h"
 #include "Core/GeneratorManagerDelegate.h"
 #include "FairRunSim.h"
 #include "FairPrimaryGenerator.h"
@@ -48,6 +49,9 @@ namespace o2sim
 
     /** create primary generator **/
     FairPrimaryGenerator *primaryGenerator = new FairPrimaryGenerator();
+
+    /** create MC event header **/
+    o2::eventgen::MCEventHeader *eventHeader = new o2::eventgen::MCEventHeader();
     
     /** loop over all delegates **/
     for (auto const &x : DelegateMap()) {
@@ -69,6 +73,8 @@ namespace o2sim
 
     /** add primary generator to FairRunSim instance **/
     runsim->SetGenerator(primaryGenerator);
+    /** add MC event header to FairRunSim instance **/
+    runsim->SetMCEventHeader(eventHeader);
     
     /** success **/
     return kTRUE;
