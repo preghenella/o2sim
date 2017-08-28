@@ -2,7 +2,8 @@
 
 set(MODULE ro2simGenerator)
 
-set(MODULE_DEPENDENCIES ro2simCore ro2simTrigger)
+find_library(HEPMC3_LIBRARY NAMES HepMC HINTS "$ENV{HEPMC3_ROOT}/lib")
+set(MODULE_DEPENDENCIES ro2simCore ro2simTrigger ${HEPMC3_LIBRARY} THijing)
 
 include_directories($ENV{HOME}/alice/AEGIS/THijing
 		    $ENV{HEPMC3_ROOT}/include)

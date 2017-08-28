@@ -2,7 +2,7 @@
 
 set(MODULE ro2simModule)
 
-set(MODULE_DEPENDENCIES ro2simCore)
+set(MODULE_DEPENDENCIES ro2simCore DetectorsPassive TPCSimulation)
 
 set(SOURCES
     ModuleManager.cxx
