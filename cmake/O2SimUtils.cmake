@@ -6,11 +6,13 @@
 
 macro(O2SIM_GENERATE_LIBRARY)
 
+  include_directories(${CMAKE_CURRENT_SOURCE_DIR}/.)
+
   find_library(HEPMC3_LIBRARY NAMES HepMC HINTS "$ENV{HEPMC3_ROOT}/lib")
 
   ROOT_GENERATE_DICTIONARY(G__${MODULE} ${HEADERS} LINKDEF ${MODULE}_LinkDef.h)
   add_library(${MODULE} SHARED ${SOURCES} G__${MODULE}.cxx)
-  target_link_libraries(${MODULE} ${ROOT_LIBRARIES} Base DetectorsPassive TPCSimulation ${HEPMC3_LIBRARY})
+  target_link_libraries(${MODULE} ${ROOT_LIBRARIES} ${MODULE_DEPENDENCIES} Base DetectorsPassive TPCSimulation ${HEPMC3_LIBRARY})
   install(TARGETS ${MODULE} LIBRARY DESTINATION lib)
 
   if (${ROOT_VERSION} VERSION_GREATER "6.0")

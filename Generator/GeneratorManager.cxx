@@ -11,7 +11,7 @@
 /// \author R+Preghenella - August 2017
 
 #include "GeneratorManager.h"
-#include "GeneratorManagerDelegate.h"
+#include "Core/GeneratorManagerDelegate.h"
 #include "FairRunSim.h"
 #include "FairPrimaryGenerator.h"
 

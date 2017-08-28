@@ -13,7 +13,7 @@
 #ifndef ALICEO2SIM_GENERATORMANAGERBOX_H_
 #define ALICEO2SIM_GENERATORMANAGERBOX_H_
 
-#include "GeneratorManagerDelegate.h"
+#include "Core/GeneratorManagerDelegate.h"
 
 namespace o2sim {
 

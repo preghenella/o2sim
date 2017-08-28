@@ -12,7 +12,7 @@
 
 #include "GeneratorManagerPythia.h"
 #include "GeneratorHepMC.h"
-#include "Trigger/TriggerManagerDelegate.h"
+#include "Core/TriggerManagerDelegate.h"
 #include "TSystem.h"
 #include <unistd.h>
 #include <sys/types.h>

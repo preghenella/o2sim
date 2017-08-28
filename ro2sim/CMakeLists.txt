@@ -14,6 +14,7 @@ target_link_libraries(ro2sim
 		      ro2simModule
 		      ro2simGenerator
 		      ro2simTrigger
+		      ro2simRun
 		      ${Boost_PROGRAM_OPTIONS_LIBRARY}
 		      )
 

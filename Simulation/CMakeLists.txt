@@ -2,6 +2,8 @@
 
 set(MODULE ro2simSimulation)
 
+set(MODULE_DEPENDENCIES ro2simCore)
+
 set(SOURCES
     SimulationManager.cxx
     )

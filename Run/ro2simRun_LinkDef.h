@@ -16,10 +16,6 @@
 #pragma link off all classes;
 #pragma link off all functions;
 
-#pragma link C++ class o2sim::ConfigurationManager+;
-#pragma link C++ class o2sim::ModuleManagerDelegate+;
-#pragma link C++ class o2sim::GeneratorManagerDelegate+;
-#pragma link C++ class o2sim::TriggerManagerDelegate+;
-#pragma link C++ class o2sim::RunManagerDelegate+;
+#pragma link C++ class o2sim::RunManager+;
 
 #endif

@@ -13,7 +13,7 @@
 #ifndef ALICEO2SIM_RUNMANAGER_H_
 #define ALICEO2SIM_RUNMANAGER_H_
 
-#include "ConfigurationManager.h"
+#include "Core/ConfigurationManager.h"
 
 namespace o2sim {
 

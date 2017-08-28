@@ -15,7 +15,7 @@
 #include <string>
 
 #include "FairRunSim.h"
-#include "Core/RunManager.h"
+#include "Run/RunManager.h"
 
 int
 main (Int_t argc, char **argv)

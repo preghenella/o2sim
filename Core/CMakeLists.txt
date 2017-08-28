@@ -4,14 +4,18 @@ set(MODULE ro2simCore)
 
 set(SOURCES
     ConfigurationManager.cxx
-    RunManager.cxx
-    RunManagerDelegate.cxx
+    ModuleManagerDelegate.cxx
+    GeneratorManagerDelegate.cxx
+    TriggerManagerDelegate.cxx
+    RunManagerDelegate.h
     )
    
 set(HEADERS
     ConfigurationManager.h
-    RunManager.h
-    RunManagerDelegate.h
+    ModuleManagerDelegate.h
+    GeneratorManagerDelegate.h
+    TriggerManagerDelegate.h
+    RunManagerDelegate.cxx
     )
 		    
 O2SIM_GENERATE_LIBRARY()

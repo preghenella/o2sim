@@ -2,16 +2,16 @@
 
 set(MODULE ro2simModule)
 
+set(MODULE_DEPENDENCIES ro2simCore)
+
 set(SOURCES
     ModuleManager.cxx
-    ModuleManagerDelegate.cxx
     ModuleManagerCave.cxx
     ModuleManagerTPC.cxx
     )
    
 set(HEADERS
     ModuleManager.h
-    ModuleManagerDelegate.h
     ModuleManagerCave.h
     ModuleManagerTPC.h
     )

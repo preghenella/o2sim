@@ -26,6 +26,8 @@ namespace eventgen
 
   ParticleTrigger::ParticleTrigger() :
     Trigger(),
+    TriggerHepMC(),
+    TriggerTGenerator(),
     fPdgCode(0),
     fPtMin(0.),
     fPtMax(1.e9),

@@ -13,7 +13,7 @@
 #ifndef ALICEO2SIM_GENERATORMANAGERHIJING_H_
 #define ALICEO2SIM_GENERATORMANAGERHIJING_H_
 
-#include "GeneratorManagerDelegate.h"
+#include "Core/GeneratorManagerDelegate.h"
 
 class THijing;
 

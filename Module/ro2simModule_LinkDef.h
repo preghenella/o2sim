@@ -17,7 +17,6 @@
 #pragma link off all functions;
 
 #pragma link C++ class o2sim::ModuleManager+;
-#pragma link C++ class o2sim::ModuleManagerDelegate+;
 #pragma link C++ class o2sim::ModuleManagerCave+;
 #pragma link C++ class o2sim::ModuleManagerTPC+;
 

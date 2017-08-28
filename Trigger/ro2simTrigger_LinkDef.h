@@ -21,7 +21,6 @@
 #pragma link C++ class o2::eventgen::TriggerTGenerator+;
 #pragma link C++ class o2::eventgen::ParticleTrigger+;
 
-#pragma link C++ class o2sim::TriggerManagerDelegate+;
 #pragma link C++ class o2sim::TriggerManagerParticle+;
 
 #endif

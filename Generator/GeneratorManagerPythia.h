@@ -13,7 +13,7 @@
 #ifndef ALICEO2SIM_GENERATORMANAGERPYTHIA_H_
 #define ALICEO2SIM_GENERATORMANAGERPYTHIA_H_
 
-#include "GeneratorManagerDelegate.h"
+#include "Core/GeneratorManagerDelegate.h"
 #include <fstream>
 
 namespace o2 {

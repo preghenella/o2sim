@@ -2,6 +2,8 @@
 
 set(MODULE ro2simGenerator)
 
+set(MODULE_DEPENDENCIES ro2simCore ro2simTrigger)
+
 include_directories($ENV{HOME}/alice/AEGIS/THijing
 		    $ENV{HEPMC3_ROOT}/include)
 
@@ -9,7 +11,6 @@ set(SOURCES
     Generator.cxx
     GeneratorHepMC.cxx
     GeneratorManager.cxx
-    GeneratorManagerDelegate.cxx
     GeneratorManagerBox.cxx
     GeneratorManagerPythia.cxx
     GeneratorManagerHijing.cxx
@@ -19,7 +20,6 @@ set(HEADERS
     Generator.h
     GeneratorHepMC.h
     GeneratorManager.h
-    GeneratorManagerDelegate.h
     GeneratorManagerBox.h
     GeneratorManagerPythia.h
     GeneratorManagerHijing.h

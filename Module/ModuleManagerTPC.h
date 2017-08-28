@@ -13,7 +13,7 @@
 #ifndef ALICEO2SIM_MODULEMANAGERTPC_H_
 #define ALICEO2SIM_MODULEMANAGERTPC_H_
 
-#include "ModuleManagerDelegate.h"
+#include "Core/ModuleManagerDelegate.h"
 
 namespace o2sim {
 

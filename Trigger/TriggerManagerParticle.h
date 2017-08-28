@@ -13,7 +13,7 @@
 #ifndef ALICEO2SIM_TRIGGERMANAGERPARTICLE_H_
 #define ALICEO2SIM_TRIGGERMANAGERPARTICLE_H_
 
-#include "TriggerManagerDelegate.h"
+#include "Core/TriggerManagerDelegate.h"
 
 namespace o2sim {
 

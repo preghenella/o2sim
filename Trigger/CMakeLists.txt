@@ -2,6 +2,8 @@
 
 set(MODULE ro2simTrigger)
 
+set(MODULE_DEPENDENCIES ro2simCore)
+
 include_directories($ENV{HEPMC3_ROOT}/include)
 
 set(SOURCES 
@@ -9,7 +11,6 @@ set(SOURCES
     TriggerHepMC.cxx
     TriggerTGenerator.cxx
     ParticleTrigger.cxx
-    TriggerManagerDelegate.cxx
     TriggerManagerParticle.cxx
    )
    
@@ -18,7 +19,6 @@ set(HEADERS
     TriggerHepMC.h
     TriggerTGenerator.h
     ParticleTrigger.h
-    TriggerManagerDelegate.h
     TriggerManagerParticle.h
     )
 		    

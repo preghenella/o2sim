@@ -11,7 +11,7 @@
 /// \author R+Preghenella - August 2017
 
 #include "ModuleManager.h"
-#include "ModuleManagerDelegate.h"
+#include "Core/ModuleManagerDelegate.h"
 #include "ModuleManagerCave.h"
 #include "ModuleManagerTPC.h"
 #include "FairRunSim.h"
