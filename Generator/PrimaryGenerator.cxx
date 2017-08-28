@@ -13,7 +13,7 @@
 #include "PrimaryGenerator.h"
 #include "FairGenericStack.h"
 #include "FairGenerator.h"
-#include "FairMCEventHeader.h"
+#include "MCEventHeader.h"
 #include "FairLogger.h"
 #include "GeneratorHeader.h"
 #include "TClonesArray.h"
@@ -27,12 +27,10 @@ namespace eventgen
   /*****************************************************************/
 
   PrimaryGenerator::PrimaryGenerator() :
-    FairPrimaryGenerator("ALICEo2", "ALICEo2 Primary Generator"),
-    fGeneratorHeaders(new TClonesArray("o2::eventgen::GeneratorHeader"))
+    FairPrimaryGenerator("ALICEo2", "ALICEo2 Primary Generator")
   {
     /** default constructor **/
 
-    fGeneratorHeaders->SetOwner(kTRUE);
   }
 
   /*****************************************************************/
@@ -41,10 +39,6 @@ namespace eventgen
   {
     /** default destructor **/
 
-    if (fGeneratorHeaders) {
-      fGeneratorHeaders->Delete();
-      delete fGeneratorHeaders;
-    }
   }
 
   /*****************************************************************/
@@ -55,6 +49,7 @@ namespace eventgen
     /** generate event **/
 
     /** initialise **/
+    fStack = stack;
     fNTracks = 0;
     fEvent->Reset();
 
@@ -64,24 +59,15 @@ namespace eventgen
 
     /** read event from all generators **/
     fListIter->Reset();
-    fGeneratorHeaders->Delete();
-    Int_t igen = 0;
     while (TObject *obj = fListIter->Next()) {
       FairGenerator *generator = dynamic_cast<FairGenerator *>(obj);
       if (!generator) return kFALSE;
       fMCIndexOffset = fNTracks; // number tracks before generator is called
-
       /** read event **/
       if (!generator->ReadEvent(this)) {
         LOG(ERROR) << "ReadEvent failed for generator " << generator->GetName() << std::endl;
         return kFALSE;
       }
-      /** add generator header **/
-      o2::eventgen::GeneratorHeader *header = new ((*fGeneratorHeaders)[igen]) o2::eventgen::GeneratorHeader(generator->GetName(), generator->GetTitle());
-      header->SetOffset(fMCIndexOffset);
-      header->SetNTracks(fNTracks - fMCIndexOffset);
-
-      ++igen;
     }
     fEvent->SetNPrim(fNTracks);
     
@@ -90,7 +76,7 @@ namespace eventgen
     /** success **/
     return kTRUE;
   }
-    
+  
   /*****************************************************************/
 
   void
@@ -139,6 +125,24 @@ namespace eventgen
     fNTracks++;
   }
 
+  /*****************************************************************/
+
+  void
+  PrimaryGenerator::AddHeader(GeneratorHeader *header)
+  {
+    /** add header **/
+
+    /** setup header **/
+    header->SetTrackOffset(fMCIndexOffset);
+    header->SetNumberOfTracks(fNTracks - fMCIndexOffset);
+
+    /** check o2 event header **/
+    auto o2event = dynamic_cast<MCEventHeader *>(fEvent);
+    if (!o2event) return;
+    o2event->AddHeader(header);
+    
+  }
+  
   /*****************************************************************/
 
   void

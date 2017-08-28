@@ -15,11 +15,14 @@
 #define ALICEO2_EVENTGEN_MCEVENTHEADER_H_
 
 #include "FairMCEventHeader.h"
+#include "TClonesArray.h"
 
 namespace o2
 {
 namespace eventgen
 {
+
+  class GeneratorHeader;
 
   /*****************************************************************/
   /*****************************************************************/
@@ -38,12 +41,16 @@ namespace eventgen
     /** destructor **/
     virtual ~MCEventHeader();
 
+    /** methods **/
+    virtual void Reset();
+    virtual void AddHeader(GeneratorHeader *header);
+    
   protected:
 
+    TClonesArray *fGeneratorHeaders;
+    
     ClassDefOverride(MCEventHeader, 1);
 
-    Int_t fRoby;
-    
   }; /** class MCEventHeader **/
   
   /*****************************************************************/

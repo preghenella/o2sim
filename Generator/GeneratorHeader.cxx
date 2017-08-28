@@ -20,13 +20,53 @@ namespace eventgen
   /*****************************************************************/
   /*****************************************************************/
 
-  GeneratorHeader::GeneratorHeader(const TString &name, const TString &title) :
-    TNamed(name, title),
-    fOffset(0),
-    fNTracks(0)
+  GeneratorHeader::GeneratorHeader() :
+    TNamed("ALICEo2", "ALICEo2 Generator Header"),
+    fTrackOffset(0),
+    fNumberOfTracks(0),
+    fNumberOfAttempts(0)
   {
     /** default constructor **/
 
+  }
+
+  /*****************************************************************/
+
+  GeneratorHeader::GeneratorHeader(const Char_t *name, const Char_t *title) :
+    TNamed(name, title),
+    fTrackOffset(0),
+    fNumberOfTracks(0),
+    fNumberOfAttempts(0)
+  {
+    /** constructor **/
+
+  }
+
+  /*****************************************************************/
+
+  GeneratorHeader::GeneratorHeader(const GeneratorHeader &rhs) :
+    TNamed(rhs),
+    fTrackOffset(rhs.fTrackOffset),
+    fNumberOfTracks(rhs.fNumberOfTracks),
+    fNumberOfAttempts(rhs.fNumberOfAttempts)
+  {
+    /** copy constructor **/
+
+  }
+
+  /*****************************************************************/
+
+  GeneratorHeader &
+  GeneratorHeader::operator=(const GeneratorHeader &rhs)
+  {
+    /** operator= **/
+    
+    if (this == &rhs) return *this;
+    TNamed::operator=(rhs);
+    fTrackOffset = rhs.fTrackOffset;
+    fNumberOfTracks = rhs.fNumberOfTracks;
+    fNumberOfAttempts = rhs.fNumberOfAttempts;
+    return *this;
   }
 
   /*****************************************************************/
@@ -35,6 +75,18 @@ namespace eventgen
   {
     /** default destructor **/
 
+  }
+
+  /*****************************************************************/
+
+  void
+  GeneratorHeader::Reset()
+  {
+    /** reset **/
+
+    fTrackOffset = 0;
+    fNumberOfTracks = 0;
+    fNumberOfAttempts = 0;
   }
 
   /*****************************************************************/

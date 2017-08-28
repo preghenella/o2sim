@@ -21,6 +21,8 @@ namespace o2
 namespace eventgen
 {
 
+  class PrimaryGenerator;
+  class GeneratorHeader;
   class Trigger;
   
   /*****************************************************************/
@@ -52,6 +54,9 @@ namespace eventgen
 	*@return kTRUE if successful, kFALSE if not
 	**/
     Bool_t ReadEvent(FairPrimaryGenerator *primGen) override;
+
+    /** getters **/
+    GeneratorHeader *GetHeader() const {return fHeader;};
     
     /** setters **/
     void SetTriggerMode(ETriggerMode_t val) {fTriggerMode = val;};
@@ -73,6 +78,7 @@ namespace eventgen
     virtual Bool_t AcceptEvent(FairPrimaryGenerator *primGen) const = 0;
 
     /** methods **/
+    virtual Bool_t AddHeader(PrimaryGenerator *primGen) const;
     Bool_t TriggerEvent() const;
     
     /** data members **/
@@ -80,6 +86,7 @@ namespace eventgen
     Int_t fMaxTriggerAttempts;
     TObjArray *fTriggers;
     Double_t fBoost;
+    GeneratorHeader *fHeader;
     
     ClassDefOverride(Generator, 1);
     

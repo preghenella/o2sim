@@ -30,24 +30,30 @@ namespace eventgen
   public:
 
     /** default constructor **/
-    GeneratorHeader(const TString &name, const TString &title = "Generator Header");
+    GeneratorHeader();
+    /** constructor **/
+    GeneratorHeader(const Char_t *name, const Char_t *title = "ALICEo2 Generator Header");
+    /** copy constructor **/
+    GeneratorHeader(const GeneratorHeader &rhs);
+    /** operator= **/
+    GeneratorHeader &operator=(const GeneratorHeader &rhs);
     /** destructor **/
     virtual ~GeneratorHeader();
 
     /** setters **/
-    void SetOffset(Int_t val) {fOffset = val;};
-    void SetNTracks(Int_t val) {fNTracks = val;};
+    void SetTrackOffset(Int_t val) {fTrackOffset = val;};
+    void SetNumberOfTracks(Int_t val) {fNumberOfTracks = val;};
+    void SetNumberOfAttempts(Int_t val) {fNumberOfAttempts = val;};
+
+    /** methods **/
+    virtual void Reset();
     
   protected:
 
-    /** copy constructor **/
-    GeneratorHeader(const GeneratorHeader &);
-    /** operator= **/
-    GeneratorHeader &operator=(const GeneratorHeader &);
-
     /** data **/
-    Int_t fOffset;
-    Int_t fNTracks;
+    Int_t fTrackOffset;
+    Int_t fNumberOfTracks;
+    Int_t fNumberOfAttempts;
     
     ClassDefOverride(GeneratorHeader, 1);
 

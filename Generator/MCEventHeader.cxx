@@ -11,6 +11,8 @@
 /// \author R+Preghenella - August 2017
 
 #include "MCEventHeader.h"
+#include "FairRootManager.h"
+#include "GeneratorHeader.h"
 
 namespace o2
 {
@@ -22,7 +24,7 @@ namespace eventgen
 
   MCEventHeader::MCEventHeader() :
     FairMCEventHeader(),
-    fRoby(666)
+    fGeneratorHeaders(new TClonesArray("o2::eventgen::GeneratorHeader"))
   {
     /** default constructor **/
 
@@ -32,7 +34,7 @@ namespace eventgen
 
   MCEventHeader::MCEventHeader(const MCEventHeader &rhs) :
     FairMCEventHeader(rhs),
-    fRoby(rhs.fRoby)
+    fGeneratorHeaders(new TClonesArray(*rhs.fGeneratorHeaders))
   {
     /** copy constructor **/
 
@@ -47,7 +49,7 @@ namespace eventgen
 
     if (this == &rhs) return *this;
     FairMCEventHeader::operator=(rhs);
-    fRoby = rhs.fRoby;
+    *fGeneratorHeaders = *rhs.fGeneratorHeaders;
     return *this;
   }
 
@@ -57,8 +59,33 @@ namespace eventgen
   {
     /** default destructor **/
 
+    if (fGeneratorHeaders) {
+      fGeneratorHeaders->Delete();
+      delete fGeneratorHeaders;
+    }
   }
 
+  /*****************************************************************/
+
+  void
+  MCEventHeader::Reset()
+  {
+    /** reset **/
+
+    fGeneratorHeaders->Delete();
+    FairMCEventHeader::Reset();
+  }
+
+  /*****************************************************************/
+
+  void
+  MCEventHeader::AddHeader(GeneratorHeader *header)
+  {
+    /** add header **/
+
+    new ((*fGeneratorHeaders)[fGeneratorHeaders->GetEntries()]) GeneratorHeader(*header);
+  }
+  
   /*****************************************************************/
   /*****************************************************************/
     

@@ -23,6 +23,8 @@ namespace o2
 namespace eventgen
 {
 
+  class GeneratorHeader;
+  
   /*****************************************************************/
   /*****************************************************************/
   
@@ -74,7 +76,13 @@ namespace eventgen
 		  Double_t px, Double_t py, Double_t pz, Double_t et,
 		  Double_t vx, Double_t vy, Double_t vz, Double_t vt,
 		  Int_t firstMother, Int_t lastMother, Int_t firstDaughter, Int_t lastDaughter);
-      
+
+    /** Public method AddHeader
+	Adding a generator header to the MC event header.
+	To be called after all tracks have been added.
+    **/
+    void AddHeader(GeneratorHeader *header);
+    
     /** set interaction diamond position **/
     void SetInteractionDiamond(const Double_t *xyz, const Double_t *sigmaxyz, Bool_t smear = kTRUE);
     
@@ -85,8 +93,6 @@ namespace eventgen
     /** operator= **/
     PrimaryGenerator &operator=(const PrimaryGenerator &);
 
-    TClonesArray *fGeneratorHeaders; //!
-    
     ClassDefOverride(PrimaryGenerator, 1);
 
   }; /** class PrimaryGenerator **/

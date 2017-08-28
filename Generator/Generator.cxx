@@ -11,9 +11,11 @@
 /// \author R+Preghenella - August 2017
 
 #include "Generator.h"
+#include "GeneratorHeader.h"
+#include "FairPrimaryGenerator.h"
+#include "PrimaryGenerator.h"
 #include "Trigger/Trigger.h"
 #include "FairLogger.h"
-#include "FairPrimaryGenerator.h"
 #include <cmath>
 
 namespace o2
@@ -28,12 +30,12 @@ namespace eventgen
     FairGenerator("ALICEo2", "ALICEo2 Generator"),
     fTriggerMode(kTriggerOFF),
     fMaxTriggerAttempts(100000),
-    fTriggers(NULL),
-    fBoost(0.)
+    fTriggers(new TObjArray()),
+    fBoost(0.),
+    fHeader(new GeneratorHeader())
   {
     /** default constructor **/
 
-    fTriggers = new TObjArray();
   }
 
   /*****************************************************************/
@@ -42,12 +44,12 @@ namespace eventgen
     FairGenerator(name, title),
     fTriggerMode(kTriggerOFF),
     fMaxTriggerAttempts(100000),
-    fTriggers(NULL),
-    fBoost(0.)
+    fTriggers(new TObjArray()),
+    fBoost(0.),
+    fHeader(new GeneratorHeader(name))
   {
     /** constructor **/
 
-    fTriggers = new TObjArray();
   }
 
   /*****************************************************************/
@@ -57,6 +59,7 @@ namespace eventgen
     /** default destructor **/
 
     if (fTriggers) delete fTriggers;
+    if (fHeader) delete fHeader;
   }
 
   /*****************************************************************/
@@ -76,6 +79,9 @@ namespace eventgen
   {
     /** read event **/
 
+    /** reset header **/
+    fHeader->Reset();
+    
     /** trigger loop **/
     Int_t nAttempts = 0;
     do {
@@ -128,6 +134,19 @@ namespace eventgen
     return triggered;
   }
 
+  /*****************************************************************/
+
+  Bool_t
+  Generator::AddHeader(PrimaryGenerator *primGen) const
+  {
+    /** add header **/
+
+    primGen->AddHeader(fHeader);
+    
+    /** success **/
+    return kTRUE;
+  }
+  
   /*****************************************************************/
   /*****************************************************************/
     

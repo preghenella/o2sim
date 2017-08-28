@@ -12,6 +12,7 @@ set(SOURCES
     MCEventHeader.cxx
     PrimaryGenerator.cxx
     Generator.cxx
+    GeneratorHeader.cxx
     GeneratorHepMC.cxx
     GeneratorTGenerator.cxx
     GeneratorManager.cxx
@@ -24,6 +25,7 @@ set(HEADERS
     MCEventHeader.h
     PrimaryGenerator.h
     Generator.h
+    GeneratorHeader.h
     GeneratorHepMC.h
     GeneratorTGenerator.h
     GeneratorManager.h
