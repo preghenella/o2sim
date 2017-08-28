@@ -90,6 +90,7 @@ namespace eventgen
     do {
       
       /** check attempts **/
+      nAttempts++;
       if (nAttempts % 1000 == 0)
 	LOG(WARNING) << "Large number of trigger attempts: " << nAttempts << std::endl;
       else if (nAttempts > fMaxAttempts) {
@@ -99,7 +100,6 @@ namespace eventgen
       
       /** generate event **/
       if (!GenerateEvent(fEvent)) return kFALSE;
-      nAttempts++;
 
       /** boost event **/
       BoostEvent(fEvent, fBoost);      
