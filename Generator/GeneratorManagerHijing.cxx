@@ -11,7 +11,7 @@
 /// \author R+Preghenella - August 2017
 
 #include "GeneratorManagerHijing.h"
-#include "Generator.h"
+#include "GeneratorTGenerator.h"
 #include "THijing.h"
 #include "TSystem.h"
 
@@ -74,7 +74,7 @@ namespace o2sim
     hij->Initialize();
     
     /** create generator **/ 
-    o2::eventgen::Generator *generator = new o2::eventgen::Generator();
+    auto generator = new o2::eventgen::GeneratorTGenerator(GetValue("name"));
 
     /** configure generator **/
     generator->SetGenerator(hij);

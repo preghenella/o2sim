@@ -54,12 +54,6 @@ namespace o2sim {
     /** get methods **/
     Bool_t GetPtHat(Double_t &min, Double_t &max) const;
 
-    /** terminate methods **/
-    Bool_t TerminateTPythia6() const;
-    Bool_t TerminateAGILe() const;
-    Bool_t TerminateTPythia8() const;
-    Bool_t TerminateSacrifice() const;
-
     ClassDefOverride(GeneratorManagerPythia, 1)
       
   }; /** class GeneratorManagerPythia **/

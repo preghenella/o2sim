@@ -12,6 +12,7 @@ set(SOURCES
     PrimaryGenerator.cxx
     Generator.cxx
     GeneratorHepMC.cxx
+    GeneratorTGenerator.cxx
     GeneratorManager.cxx
     GeneratorManagerBox.cxx
     GeneratorManagerPythia.cxx
@@ -23,6 +24,7 @@ set(HEADERS
     PrimaryGenerator.h
     Generator.h
     GeneratorHepMC.h
+    GeneratorTGenerator.h
     GeneratorManager.h
     GeneratorManagerBox.h
     GeneratorManagerPythia.h

@@ -31,23 +31,29 @@ namespace eventgen
   /*****************************************************************/
 
   GeneratorHepMC::GeneratorHepMC() :
-    FairGenerator("ALICEo2", "ALICEo2 HepMC Generator"),
+    Generator("ALICEo2", "ALICEo2 HepMC Generator"),
     fStream(),
     fFileName(),
     fVersion(3),
     fReader(NULL),
-    fEvent(NULL),
-    fTriggers(NULL),
-    fTriggerMode(kTriggerOR),
-    fBoost(0.),
-    fMaxAttempts(100000)
+    fEvent(NULL)
   {
     /** default constructor **/
 
-    fEvent = new HepMC::GenEvent();
-    fTriggers = new TObjArray();
-    //    fTriggers->SetOwner(kTRUE);
-    
+  }
+
+  /*****************************************************************/
+
+  GeneratorHepMC::GeneratorHepMC(const Char_t *name, const Char_t *title) :
+    Generator(name, title),
+    fStream(),
+    fFileName(),
+    fVersion(3),
+    fReader(NULL),
+    fEvent(NULL)
+  {
+    /** constructor **/
+
   }
 
   /*****************************************************************/
@@ -62,64 +68,18 @@ namespace eventgen
       delete fReader;
     }
     if (fEvent) delete fEvent;
-    //    if (fTriggers) delete fTriggers;
-  }
-
-  /*****************************************************************/
-
-  void
-  GeneratorHepMC::AddTrigger(Trigger *trigger)
-  {
-    /** add trigger **/
-
-    fTriggers->Add(trigger);
-  }
-  
-  /*****************************************************************/
-
-  Bool_t
-  GeneratorHepMC::ReadEvent(FairPrimaryGenerator *primGen)
-  {
-    /** read event **/
-
-    /** check reader **/
-    if (!fReader) return kFALSE;
-
-    /** trigger loop **/
-    Int_t nAttempts = 0;
-    do {
-      
-      /** check attempts **/
-      nAttempts++;
-      if (nAttempts % 1000 == 0)
-	LOG(WARNING) << "Large number of trigger attempts: " << nAttempts << std::endl;
-      else if (nAttempts > fMaxAttempts) {
-	LOG(ERROR) << "Maximum number of trigger attempts exceeded: " << fMaxAttempts << std::endl;
-	return kFALSE;
-      }
-      
-      /** generate event **/
-      if (!GenerateEvent(fEvent)) return kFALSE;
-
-      /** boost event **/
-      BoostEvent(fEvent, fBoost);      
-
-    } while (!TriggerEvent(fEvent)); /** end of trigger loop **/
-
-    /** accept event **/
-    return AcceptEvent(fEvent, primGen);
   }
 
   /*****************************************************************/
 
   Bool_t
-  GeneratorHepMC::GenerateEvent(HepMC::GenEvent *event)
+  GeneratorHepMC::GenerateEvent()
   {
     /** generate event **/
 
     /** clear and read event **/
-    event->clear();
-    fReader->read_event(*event);
+    fEvent->clear();
+    fReader->read_event(*fEvent);
     if(fReader->failed()) return kFALSE;      
     /** set units to desired output **/
     fEvent->set_units(HepMC::Units::GEV, HepMC::Units::CM);
@@ -131,42 +91,29 @@ namespace eventgen
   /*****************************************************************/
 
   Bool_t
-  GeneratorHepMC::TriggerEvent(HepMC::GenEvent *event)
+  GeneratorHepMC::TriggerFired(Trigger *trigger) const
   {
-    /** trigger event **/
+    /** trigger fired **/
     
-    Bool_t triggered;
-    if (fTriggers->GetEntries() == 0) return kTRUE;
-    else if (fTriggerMode == kTriggerOFF) return kTRUE;
-    else if (fTriggerMode == kTriggerOR) triggered = kFALSE;
-    else if (fTriggerMode == kTriggerAND) triggered = kTRUE;
-    else return kTRUE;
+    auto aTrigger = dynamic_cast<TriggerHepMC *>(trigger);
+    if (!aTrigger) {
+      LOG(ERROR) << "Incompatile trigger for HepMC interface" << std::endl;
+      return kFALSE;
+    }
     
-    /** loop over triggers **/
-    for (Int_t itrigger = 0; itrigger < fTriggers->GetEntries(); itrigger++) {
-      auto trigger = dynamic_cast<TriggerHepMC *>(fTriggers->At(itrigger));
-      if (!trigger) {
-	LOG(ERROR) << "Incompatile trigger for HepMC interface" << std::endl;
-	return kFALSE;
-      }
-      Bool_t retval = trigger->TriggerEvent(event);
-      if (fTriggerMode == kTriggerOR) triggered |= retval;
-      if (fTriggerMode == kTriggerAND) triggered &= retval;
-    } /** end of loop over triggers **/
-
     /** success **/
-    return triggered;
+    return aTrigger->TriggerEvent(fEvent);
   }
   
   /*****************************************************************/
 
   Bool_t
-  GeneratorHepMC::AcceptEvent(HepMC::GenEvent *event, FairPrimaryGenerator *primGen)
+  GeneratorHepMC::AcceptEvent(FairPrimaryGenerator *primGen) const
   {
     /** accept event **/
     
     /** loop over particles **/
-    auto particles = event->particles();
+    auto particles = fEvent->particles();
     for (auto const &particle : particles) {
       
       /** get particle information **/
@@ -209,21 +156,23 @@ namespace eventgen
   
   /*****************************************************************/
 
-  void
-  GeneratorHepMC::BoostEvent(HepMC::GenEvent *event, Double_t boost)
+  Bool_t
+  GeneratorHepMC::BoostEvent(Double_t boost)
   {
     /** boost **/
 
     /** loop over particles **/
-    if (std::abs(boost) < 1.e-6) return;
-    auto particles = event->particles();
+    if (std::abs(boost) < 1.e-6) return kTRUE;
+    auto particles = fEvent->particles();
     for (auto &particle : particles) {
       auto momentum = GetBoostedVector(particle->momentum(), boost);
       particle->set_momentum(momentum);
       auto position = GetBoostedVector(particle->production_vertex()->position(), boost);
       particle->production_vertex()->set_position(position);
     }
-    
+
+    /** success **/
+    return kTRUE;
   }
   
   /*****************************************************************/
@@ -273,9 +222,12 @@ namespace eventgen
       LOG(ERROR) << "Unsupported HepMC version: " << fVersion << std::endl;
       return kFALSE;
     }
-      
+
+    /** create event **/
+    fEvent = new HepMC::GenEvent();
+    
     /** success **/
-    return kTRUE;
+    return !fReader->failed();
   }
 
   /*****************************************************************/

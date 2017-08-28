@@ -85,7 +85,7 @@ namespace o2sim
     if (!GetNumberOfEvents(nevents)) return NULL;
 
     /** create generator **/
-    o2::eventgen::GeneratorHepMC *generator = new o2::eventgen::GeneratorHepMC();    
+    auto generator = new o2::eventgen::GeneratorHepMC(GetValue("name"));
     generator->SetBoost(rapidity);
     
     /** init trigger **/

@@ -1,4 +1,3 @@
-
 // Copyright CERN and copyright holders of ALICE O2. This software is
 // distributed under the terms of the GNU General Public License v3 (GPL
 // Version 3), copied verbatim in the file "COPYING".
@@ -9,19 +8,15 @@
 // granted to it by virtue of its status as an Intergovernmental Organization
 // or submit itself to any jurisdiction.
 
-/// \author R+Preghenella - August 2017
+/// \author R+Preghenella - June 2017
 
-#ifndef ALICEO2_EVENTGEN_GENERATORHEPMC_H_
-#define ALICEO2_EVENTGEN_GENERATORHEPMC_H_
+#ifndef ALICEO2_EVENTGEN_GENERATORTGENERATOR_H_
+#define ALICEO2_EVENTGEN_GENERATORTGENERATOR_H_
 
 #include "Generator.h"
-#include <fstream>
 
-namespace HepMC {
-  class Reader;
-  class GenEvent;
-  class FourVector;
-}
+class TGenerator;
+class TClonesArray;
 
 namespace o2
 {
@@ -30,32 +25,33 @@ namespace eventgen
 
   /*****************************************************************/
   /*****************************************************************/
-    
-  class GeneratorHepMC : public Generator
+
+  class GeneratorTGenerator : public Generator
   {
     
   public:
 
     /** default constructor **/
-    GeneratorHepMC();
-    /** constructor **/
-    GeneratorHepMC(const Char_t *name, const Char_t *title = "ALICEo2 HepMC Generator");
+    GeneratorTGenerator();
+    /** constructor with name and title **/
+    GeneratorTGenerator(const Char_t *name, const Char_t *title = "ALICEo2 TGenerator Generator");
     /** destructor **/
-    virtual ~GeneratorHepMC();
+    virtual ~GeneratorTGenerator();
+
+    /** setters **/
+    void SetGenerator(TGenerator *val) {fGenerator = val;};
 
     /** Initialize the generator if needed **/
     virtual Bool_t Init() override;
 
     /** setters **/
-    void SetVersion(Int_t val) {fVersion = val;};
-    void SetFileName(std::string val) {fFileName = val;};
-
+    void SetTriggerMode(ETriggerMode_t val) {fTriggerMode = val;};
+    
   protected:
-
     /** copy constructor **/
-    GeneratorHepMC(const GeneratorHepMC &);
+    GeneratorTGenerator(const GeneratorTGenerator &);
     /** operator= **/
-    GeneratorHepMC &operator=(const GeneratorHepMC &);
+    GeneratorTGenerator &operator=(const GeneratorTGenerator &);
 
     /** methods to override **/
     Bool_t GenerateEvent() override;
@@ -63,24 +59,18 @@ namespace eventgen
     Bool_t TriggerFired(Trigger *trigger) const override;
     Bool_t AcceptEvent(FairPrimaryGenerator *primGen) const override;
     
-    /** methods **/
-    const HepMC::FourVector GetBoostedVector(const HepMC::FourVector &vector, Double_t boost);
+    /** TGenerator interface **/
+    TGenerator *fGenerator;
+    TClonesArray *fParticles;
 
-    /** HepMC interface **/
-    std::ifstream fStream;
-    std::string fFileName;
-    Int_t fVersion;
-    HepMC::Reader *fReader;
-    HepMC::GenEvent *fEvent;
+    ClassDefOverride(GeneratorTGenerator, 1);
     
-    ClassDefOverride(GeneratorHepMC, 1);
-    
-  }; /** class GeneratorHepMC **/
+  }; /** class GeneratorTGenerator **/
   
   /*****************************************************************/
   /*****************************************************************/
-    
+
 } /** namespace eventgen **/
 } /** namespace o2 **/
 
-#endif /* ALICEO2_EVENTGEN_GENERATORHEPMC_H_ */ 
+#endif /* ALICEO2_EVENTGEN_GENERATORTGENERATOR_H_ */ 

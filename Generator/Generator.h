@@ -1,3 +1,4 @@
+
 // Copyright CERN and copyright holders of ALICE O2. This software is
 // distributed under the terms of the GNU General Public License v3 (GPL
 // Version 3), copied verbatim in the file "COPYING".
@@ -8,16 +9,12 @@
 // granted to it by virtue of its status as an Intergovernmental Organization
 // or submit itself to any jurisdiction.
 
-/// \author R+Preghenella - June 2017
+/// \author R+Preghenella - August 2017
 
 #ifndef ALICEO2_EVENTGEN_GENERATOR_H_
 #define ALICEO2_EVENTGEN_GENERATOR_H_
 
 #include "FairGenerator.h"
-
-class TGenerator;
-class TClonesArray;
-class TObjArray;
 
 namespace o2
 {
@@ -26,26 +23,26 @@ namespace eventgen
 
   class Trigger;
   
+  /*****************************************************************/
+  /*****************************************************************/
+    
   class Generator : public FairGenerator
   {
     
   public:
 
     enum ETriggerMode_t {
+      kTriggerOFF,
       kTriggerOR,
       kTriggerAND
     };
     
     /** default constructor **/
     Generator();
-    /** constructor with name and title **/
-    Generator(const Char_t *name, const Char_t *title = "ALICEo2 Event Generator");
+    /** constructor **/
+    Generator(const Char_t *name, const Char_t *title = "ALICEo2 Generator");
     /** destructor **/
-    //      virtual ~Generator();
-
-    /** setters **/
-    void SetGenerator(TGenerator *val) {fGenerator = val;};
-    void AddTrigger(Trigger *val);
+    virtual ~Generator();
 
     /** Abstract method ReadEvent must be implemented by any derived class.
 	It has to handle the generation of input tracks (reading from input
@@ -54,36 +51,44 @@ namespace eventgen
 	*@param pStack The stack
 	*@return kTRUE if successful, kFALSE if not
 	**/
-    virtual Bool_t ReadEvent(FairPrimaryGenerator *primGen) override;
+    Bool_t ReadEvent(FairPrimaryGenerator *primGen) override;
     
-    /** Initialize the generator if needed **/
-    virtual Bool_t Init() override;
-
     /** setters **/
     void SetTriggerMode(ETriggerMode_t val) {fTriggerMode = val;};
-    void SetNumberOfEvents(Int_t val) {fNumberOfEvents = val;};
-    
+    void SetMaxTriggerAttempts(Int_t val) {fMaxTriggerAttempts = val;};
+    void AddTrigger(Trigger *trigger);
+    void SetBoost(Double_t val) {fBoost = val;};
+
   protected:
+
     /** copy constructor **/
     Generator(const Generator &);
     /** operator= **/
     Generator &operator=(const Generator &);
 
-    /** plugin interfaces **/
-    TGenerator *fGenerator;
-    TObjArray *fTriggers;
-    
-    /** generator data **/
-    TClonesArray *fParticles;
+    /** methods to override **/
+    virtual Bool_t GenerateEvent() = 0;
+    virtual Bool_t BoostEvent(Double_t boost) = 0;
+    virtual Bool_t TriggerFired(Trigger *trigger) const = 0;
+    virtual Bool_t AcceptEvent(FairPrimaryGenerator *primGen) const = 0;
 
+    /** methods **/
+    Bool_t TriggerEvent() const;
+    
     /** data members **/
     ETriggerMode_t fTriggerMode;
-    Int_t fNumberOfEvents;
+    Int_t fMaxTriggerAttempts;
+    TObjArray *fTriggers;
+    Double_t fBoost;
     
     ClassDefOverride(Generator, 1);
-  };
+    
+  }; /** class Generator **/
+
+  /*****************************************************************/
+  /*****************************************************************/
   
-} /* namespace eventgen */
-} /* namespace o2 */
+} /** namespace eventgen **/
+} /** namespace o2 **/
 
 #endif /* ALICEO2_EVENTGEN_GENERATOR_H_ */ 

@@ -20,6 +20,7 @@
 #pragma link C++ class o2::eventgen::PrimaryGenerator+;
 #pragma link C++ class o2::eventgen::Generator+;
 #pragma link C++ class o2::eventgen::GeneratorHepMC+;
+#pragma link C++ class o2::eventgen::GeneratorTGenerator+;
 
 #pragma link C++ class o2sim::GeneratorManager+;
 #pragma link C++ class o2sim::GeneratorManagerBox+;
