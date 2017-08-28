@@ -19,6 +19,8 @@
 #include "HepMC/GenEvent.h"
 #include "HepMC/GenParticle.h"
 #include "HepMC/GenVertex.h"
+#include "HepMC/FourVector.h"
+#include <cmath>
 
 namespace o2
 {
@@ -36,7 +38,9 @@ namespace eventgen
     fReader(NULL),
     fEvent(NULL),
     fTriggers(NULL),
-    fTriggerMode(kTriggerOR)
+    fTriggerMode(kTriggerOR),
+    fBoost(0.),
+    fMaxAttempts(100000)
   {
     /** default constructor **/
 
@@ -81,45 +85,88 @@ namespace eventgen
     /** check reader **/
     if (!fReader) return kFALSE;
 
-    /** generate and trigger loop **/
-    Bool_t triggered;
+    /** trigger loop **/
     Int_t nAttempts = 0;
     do {
-
-      nAttempts++;
+      
+      /** check attempts **/
       if (nAttempts % 1000 == 0)
 	LOG(WARNING) << "Large number of trigger attempts: " << nAttempts << std::endl;
+      else if (nAttempts > fMaxAttempts) {
+	LOG(ERROR) << "Maximum number of trigger attempts exceeded: " << fMaxAttempts << std::endl;
+	return kFALSE;
+      }
       
-      /** clear and read event **/
-      fEvent->clear();
-      fReader->read_event(*fEvent);
-      if(fReader->failed()) return kFALSE;      
-      /** set units to desired output **/
-      fEvent->set_units(HepMC::Units::GEV, HepMC::Units::CM);
+      /** generate event **/
+      if (!GenerateEvent(fEvent)) return kFALSE;
+      nAttempts++;
 
-      /** trigger event **/
-      if (fTriggers->GetEntries() == 0) break; // no trigger applied
-      if (fTriggerMode == kTriggerOR) triggered = kFALSE;
-      else if (fTriggerMode == kTriggerAND) triggered = kTRUE;
-      else break; // unkown trigger mode
-      /** loop over triggers **/
-      for (Int_t itrigger = 0; itrigger < fTriggers->GetEntries(); itrigger++) {
-	auto trigger = dynamic_cast<TriggerHepMC *>(fTriggers->At(itrigger));
-	if (!trigger) {
-	  LOG(ERROR) << "Incompatile trigger for HepMC interface" << std::endl;
-	  return kFALSE;
-	}
-	Bool_t retval = trigger->TriggerEvent(fEvent);
-	if (fTriggerMode == kTriggerOR) triggered |= retval;
-	if (fTriggerMode == kTriggerAND) triggered &= retval;
-      } /** and of loop over triggers **/
-      
-    } while (!triggered); /** end of generate and trigger loop **/
+      /** boost event **/
+      BoostEvent(fEvent, fBoost);      
 
-    /** add particles **/
+    } while (!TriggerEvent(fEvent)); /** end of trigger loop **/
+
+    /** accept event **/
+    return AcceptEvent(fEvent, primGen);
+  }
+
+  /*****************************************************************/
+
+  Bool_t
+  GeneratorHepMC::GenerateEvent(HepMC::GenEvent *event)
+  {
+    /** generate event **/
+
+    /** clear and read event **/
+    event->clear();
+    fReader->read_event(*event);
+    if(fReader->failed()) return kFALSE;      
+    /** set units to desired output **/
+    fEvent->set_units(HepMC::Units::GEV, HepMC::Units::CM);
+
+    /** success **/
+    return kTRUE;
+  }
+  
+  /*****************************************************************/
+
+  Bool_t
+  GeneratorHepMC::TriggerEvent(HepMC::GenEvent *event)
+  {
+    /** trigger event **/
+    
+    Bool_t triggered;
+    if (fTriggers->GetEntries() == 0) return kTRUE;
+    else if (fTriggerMode == kTriggerOFF) return kTRUE;
+    else if (fTriggerMode == kTriggerOR) triggered = kFALSE;
+    else if (fTriggerMode == kTriggerAND) triggered = kTRUE;
+    else return kTRUE;
+    
+    /** loop over triggers **/
+    for (Int_t itrigger = 0; itrigger < fTriggers->GetEntries(); itrigger++) {
+      auto trigger = dynamic_cast<TriggerHepMC *>(fTriggers->At(itrigger));
+      if (!trigger) {
+	LOG(ERROR) << "Incompatile trigger for HepMC interface" << std::endl;
+	return kFALSE;
+      }
+      Bool_t retval = trigger->TriggerEvent(event);
+      if (fTriggerMode == kTriggerOR) triggered |= retval;
+      if (fTriggerMode == kTriggerAND) triggered &= retval;
+    } /** end of loop over triggers **/
+
+    /** success **/
+    return triggered;
+  }
+  
+  /*****************************************************************/
+
+  Bool_t
+  GeneratorHepMC::AcceptEvent(HepMC::GenEvent *event, FairPrimaryGenerator *primGen)
+  {
+    /** accept event **/
     
     /** loop over particles **/
-    auto particles = fEvent->particles();
+    auto particles = event->particles();
     for (auto const &particle : particles) {
       
       /** get particle information **/
@@ -149,8 +196,8 @@ namespace eventgen
       auto ww = 1.;
       
       /** set want tracking [WIP] **/
-      auto wt = (st == 1 || children.empty());
-      
+      auto wt = children.empty();
+
       /* add track */
       primGen->AddTrack(pdg, px, py, pz, vx, vy, vz, mm, wt, et, vt, ww);
       
@@ -159,15 +206,52 @@ namespace eventgen
     /** success **/
     return kTRUE;
   }
+  
+  /*****************************************************************/
+
+  void
+  GeneratorHepMC::BoostEvent(HepMC::GenEvent *event, Double_t boost)
+  {
+    /** boost **/
+
+    /** loop over particles **/
+    if (std::abs(boost) < 1.e-6) return;
+    auto particles = event->particles();
+    for (auto &particle : particles) {
+      auto momentum = GetBoostedVector(particle->momentum(), boost);
+      particle->set_momentum(momentum);
+      auto position = GetBoostedVector(particle->production_vertex()->position(), boost);
+      particle->production_vertex()->set_position(position);
+    }
+    
+  }
+  
+  /*****************************************************************/
+
+  const HepMC::FourVector
+  GeneratorHepMC::GetBoostedVector(const HepMC::FourVector &vector, Double_t boost)
+  {
+    /** boost **/
+
+    auto x = vector.x();
+    auto y = vector.y();
+    auto z = vector.z();
+    auto t = vector.t();
+    auto coshb = std::cosh(boost);
+    auto sinhb = std::sinh(boost);
+    auto xx = x;
+    auto yy = y;
+    auto zz = z * coshb - t * sinhb;
+    auto tt = t * coshb - z * sinhb;
+    return HepMC::FourVector(xx, yy, zz, tt);
+  }
 
   /*****************************************************************/
 
   Bool_t
   GeneratorHepMC::Init()
   {
-    /*
-     * init
-     */
+    /** init **/
 
     /** open file **/
     fStream.open(fFileName);

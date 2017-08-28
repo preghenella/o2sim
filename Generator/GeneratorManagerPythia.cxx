@@ -54,6 +54,9 @@ namespace o2sim
     /** get energy **/
     Double_t energy;
     if (!GetCMSEnergy(energy)) return NULL;
+    /** get rapidity **/
+    Double_t rapidity;
+    if (!GetCMSRapidity(rapidity)) return NULL;
     
     /** create config **/
     std::string configFileName = std::string(GetValue("version").Data()) + "." + std::string(GetValue("name").Data()) + ".param";
@@ -83,7 +86,8 @@ namespace o2sim
 
     /** create generator **/
     o2::eventgen::GeneratorHepMC *generator = new o2::eventgen::GeneratorHepMC();    
-
+    generator->SetBoost(rapidity);
+    
     /** init trigger **/
     if (!InitTrigger(generator)) {
       LOG(ERROR) << "Failed to initialise generator trigger" << std::endl;

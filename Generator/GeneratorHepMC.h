@@ -18,8 +18,9 @@
 #include <fstream>
 
 namespace HepMC {
-  class GenEvent;
   class Reader;
+  class GenEvent;
+  class FourVector;
 }
 
 namespace o2
@@ -35,6 +36,7 @@ namespace eventgen
   public:
 
     enum ETriggerMode_t {
+      kTriggerOFF,
       kTriggerOR,
       kTriggerAND
     };
@@ -61,7 +63,8 @@ namespace eventgen
     void SetFileName(std::string val) {fFileName = val;};
     void SetTriggerMode(ETriggerMode_t val) {fTriggerMode = val;};
     void AddTrigger(Trigger *trigger);
-    
+    void SetBoost(Double_t val) {fBoost = val;};
+
   protected:
 
     /** copy constructor **/
@@ -69,13 +72,22 @@ namespace eventgen
     /** operator= **/
     GeneratorHepMC &operator=(const GeneratorHepMC &);
 
+    /** methods **/
+    Bool_t GenerateEvent(HepMC::GenEvent *event);
+    Bool_t TriggerEvent(HepMC::GenEvent *event);
+    Bool_t AcceptEvent(HepMC::GenEvent *event, FairPrimaryGenerator *primGen);
+    void BoostEvent(HepMC::GenEvent *event, Double_t boost);
+    const HepMC::FourVector GetBoostedVector(const HepMC::FourVector &vector, Double_t boost);
+    
     std::ifstream fStream;
     std::string fFileName;
     Int_t fVersion;
     HepMC::Reader *fReader;
     HepMC::GenEvent *fEvent;
     TObjArray *fTriggers;
-
+    Double_t fBoost;
+    Int_t fMaxAttempts;
+    
     ETriggerMode_t fTriggerMode;
     
     ClassDefOverride(GeneratorHepMC, 1);
