@@ -15,7 +15,13 @@
 
 #include "Core/RunManagerDelegate.h"
 
-class FairPrimaryGenerator;
+namespace o2 {
+  namespace eventgen {
+    class PrimaryGenerator;
+  }
+}
+
+namespace o2eg = o2::eventgen;
 
 namespace o2sim {
   
@@ -36,7 +42,7 @@ namespace o2sim {
     
   private:
 
-    Bool_t SetupInteractionDiamond(FairPrimaryGenerator *primaryGenerator) const;
+    Bool_t SetupInteractionDiamond(o2eg::PrimaryGenerator *primGen) const;
     
     ClassDefOverride(GeneratorManager, 1)
       

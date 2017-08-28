@@ -11,6 +11,7 @@
 /// \author R+Preghenella - August 2017
 
 #include "GeneratorManager.h"
+#include "PrimaryGenerator.h"
 #include "MCEventHeader.h"
 #include "Core/GeneratorManagerDelegate.h"
 #include "FairRunSim.h"
@@ -48,10 +49,10 @@ namespace o2sim
     }
 
     /** create primary generator **/
-    FairPrimaryGenerator *primaryGenerator = new FairPrimaryGenerator();
+    o2eg::PrimaryGenerator *primGen = new o2eg::PrimaryGenerator();
 
     /** create MC event header **/
-    o2::eventgen::MCEventHeader *eventHeader = new o2::eventgen::MCEventHeader();
+    o2eg::MCEventHeader *eventHeader = new o2eg::MCEventHeader();
     
     /** loop over all delegates **/
     for (auto const &x : DelegateMap()) {
@@ -64,15 +65,15 @@ namespace o2sim
 	return kFALSE;
       }
       /** add generator **/
-      primaryGenerator->AddGenerator(generator);
+      primGen->AddGenerator(generator);
       LOG(INFO) << "Added generator from \"" << x.first << "\" delegate" << std::endl;
     }
 
     /** config primary generator **/
-    if (!SetupInteractionDiamond(primaryGenerator)) return kFALSE;
+    if (!SetupInteractionDiamond(primGen)) return kFALSE;
 
     /** add primary generator to FairRunSim instance **/
-    runsim->SetGenerator(primaryGenerator);
+    runsim->SetGenerator(primGen);
     /** add MC event header to FairRunSim instance **/
     runsim->SetMCEventHeader(eventHeader);
     
@@ -111,27 +112,24 @@ namespace o2sim
   /*****************************************************************/
 
   Bool_t
-  GeneratorManager::SetupInteractionDiamond(FairPrimaryGenerator *primaryGenerator) const
+  GeneratorManager::SetupInteractionDiamond(o2eg::PrimaryGenerator *primGen) const
   {
     /** setup interaction diamond **/
 
-    /** parse interaction diamond xyz, sigma_xyz **/
-    Double_t xyz[3], sigma_xyz[3];
+    /** parse interaction diamond xyz, sigmaxyz **/
+    Double_t xyz[3], sigmaxyz[3];
     TString name = "diamond_xyz";
     if (!GetValue(name, xyz, 3)) {
       LOG(FATAL) << "Cannot parse \"" << name << "\": " << GetValue(name) << std::endl;
       return kFALSE;
     }
     name = "diamond_sigma_xyz";
-    if (!GetValue(name, sigma_xyz, 3)) {
+    if (!GetValue(name, sigmaxyz, 3)) {
       LOG(FATAL) << "Cannot parse \"" << name << "\": " << GetValue(name) << std::endl;
       return kFALSE;
     }
     /** set primary generator **/
-    primaryGenerator->SetBeam(xyz[0], xyz[1], sigma_xyz[0], sigma_xyz[1]);
-    primaryGenerator->SetTarget(xyz[2], sigma_xyz[2]);
-    primaryGenerator->SmearGausVertexXY(kTRUE);
-    primaryGenerator->SmearGausVertexZ(kTRUE);
+    primGen->SetInteractionDiamond(xyz, sigmaxyz);
 
     /** success **/
     return kTRUE;
