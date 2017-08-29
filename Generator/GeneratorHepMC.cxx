@@ -162,23 +162,35 @@ namespace eventgen
   {
     /** add header **/
 
-    /** add cross-section data **/
-    auto xs = fEvent->cross_section();
-    if (xs && xs->is_valid()) {
+    /** add cross-section info **/
+    auto cs = fEvent->cross_section();
+    if (cs && cs->is_valid()) {
       auto crossSection = fHeader->AddCrossSectionInfo();
-      crossSection->SetCrossSection(xs->cross_section);
-      crossSection->SetCrossSectionError(xs->cross_section_error);
-      crossSection->SetAcceptedEvents(xs->accepted_events);
-      crossSection->SetAttemptedEvents(xs->attempted_events);
+      crossSection->SetCrossSection(cs->cross_section);
+      crossSection->SetCrossSectionError(cs->cross_section_error);
+      crossSection->SetAcceptedEvents(cs->accepted_events);
+      crossSection->SetAttemptedEvents(cs->attempted_events);
     }
     else fHeader->RemoveCrossSectionInfo();
-      
-    /** add heavy-ion data **/
+    
+    /** add heavy-ion info **/
     auto hi = fEvent->heavy_ion();
     if (hi && hi->is_valid()) {
-      std::cout << "Found heavy-ion data to write" << std::endl;
+      auto heavyIon = fHeader->AddHeavyIonInfo();
+      heavyIon->SetNcollHard(hi->Ncoll_hard);
+      heavyIon->SetNpartProj(hi->Npart_proj);
+      heavyIon->SetNpartTarg(hi->Npart_targ);
+      heavyIon->SetNcoll(hi->Ncoll);
+      heavyIon->SetNspecNeut(hi->spectator_neutrons);
+      heavyIon->SetNspecProt(hi->spectator_protons);
+      heavyIon->SetImpactParameter(hi->impact_parameter);
+      heavyIon->SetEventPlaneAngle(hi->event_plane_angle);
+      heavyIon->SetEccentricity(hi->eccentricity);
+      heavyIon->SetSigmaNN(hi->sigma_inel_NN);
+      heavyIon->SetCentrality(hi->centrality);
     }
-      
+    else fHeader->RemoveHeavyIonInfo();
+    
     /** success **/
     return Generator::AddHeader(primGen);
   }

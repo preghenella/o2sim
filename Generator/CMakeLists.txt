@@ -13,6 +13,9 @@ set(SOURCES
     PrimaryGenerator.cxx
     Generator.cxx
     GeneratorHeader.cxx
+    GeneratorInfo.cxx
+    CrossSectionInfo.cxx
+    HeavyIonInfo.cxx
     GeneratorHepMC.cxx
     GeneratorTGenerator.cxx
     GeneratorManager.cxx
@@ -26,6 +29,9 @@ set(HEADERS
     PrimaryGenerator.h
     Generator.h
     GeneratorHeader.h
+    GeneratorInfo.h
+    CrossSectionInfo.h
+    HeavyIonInfo.h
     GeneratorHepMC.h
     GeneratorTGenerator.h
     GeneratorManager.h

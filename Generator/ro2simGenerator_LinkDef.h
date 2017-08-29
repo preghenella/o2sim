@@ -20,13 +20,14 @@
 #pragma link C++ class o2::eventgen::PrimaryGenerator+;
 #pragma link C++ class o2::eventgen::Generator+;
 #pragma link C++ class o2::eventgen::GeneratorHeader+;
-#pragma link C++ class o2::eventgen::GeneratorHeaderInfo+;
+#pragma link C++ class o2::eventgen::GeneratorInfo+;
 #pragma link C++ class o2::eventgen::CrossSectionInfo+;
+#pragma link C++ class o2::eventgen::HeavyIonInfo+;
 #pragma link C++ class o2::eventgen::GeneratorHepMC+;
 #pragma link C++ class o2::eventgen::GeneratorTGenerator+;
 
 #pragma link C++ class std::vector<GeneratorHeader *>
-#pragma link C++ class std::map<std::string, GeneratorHeaderInfo *>+;
+#pragma link C++ class std::map<std::string, GeneratorInfo *>+;
 
 #pragma link C++ class o2sim::GeneratorManager+;
 #pragma link C++ class o2sim::GeneratorManagerBox+;

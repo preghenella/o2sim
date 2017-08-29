@@ -11,6 +11,8 @@
 /// \author R+Preghenella - August 2017
 
 #include "GeneratorHeader.h"
+#include "CrossSectionInfo.h"
+#include "HeavyIonInfo.h"
 #include <iostream>
 
 namespace o2
@@ -137,93 +139,50 @@ namespace eventgen
   }
   
   /*****************************************************************/
-
+  
   void
   GeneratorHeader::RemoveCrossSectionInfo()
   {
     /** remove cross-section info **/
     
-    std::string key = CrossSectionInfo::KeyName();
-    if (!fInfo.count(key)) return;
-    fInfo.erase(key);
+    RemoveGeneratorInfo(CrossSectionInfo::KeyName());
   }
   
   /*****************************************************************/
-  /*****************************************************************/
-    
-  CrossSectionInfo::CrossSectionInfo() :
-    fCrossSection(0.),
-    fCrossSectionError(0.),
-    fAcceptedEvents(0),
-    fAttemptedEvents(0)
+  
+  HeavyIonInfo *
+  GeneratorHeader::GetHeavyIonInfo() const
   {
-    /** default constructor **/
-    
-  }
+    /** get heavy-ion info **/
 
+    std::string key = HeavyIonInfo::KeyName();
+    if (!fInfo.count(key)) return NULL;
+    return dynamic_cast<HeavyIonInfo *>(fInfo.at(key));
+  }
+  
   /*****************************************************************/
 
-  CrossSectionInfo::CrossSectionInfo(const CrossSectionInfo &rhs) :
-    fCrossSection(rhs.fCrossSection),
-    fCrossSectionError(rhs.fCrossSectionError),
-    fAcceptedEvents(rhs.fAcceptedEvents),
-    fAttemptedEvents(rhs.fAttemptedEvents)
+  HeavyIonInfo *
+  GeneratorHeader::AddHeavyIonInfo()
   {
-    /** copy constructor **/
+    /** add cross-section info **/
 
+    std::string key = HeavyIonInfo::KeyName();
+    if (!fInfo.count(key))
+      fInfo[key] = new HeavyIonInfo();
+    return static_cast<HeavyIonInfo *>(fInfo.at(key));
   }
-
+  
   /*****************************************************************/
-
-  CrossSectionInfo &
-  CrossSectionInfo::operator=(const CrossSectionInfo &rhs)
-  {
-    /** operator= **/
-    
-    if (this == &rhs) return *this;
-    fCrossSection = rhs.fCrossSection;
-    fCrossSectionError = rhs.fCrossSectionError;
-    fAcceptedEvents = rhs.fAcceptedEvents;
-    fAttemptedEvents = rhs.fAttemptedEvents;
-    return *this;
-  }
-
-  /*****************************************************************/
-
-  CrossSectionInfo::~CrossSectionInfo()
-  {
-    /** default destructor **/
-
-  }
-
-  /*****************************************************************/
-
+  
   void
-  CrossSectionInfo::Reset()
+  GeneratorHeader::RemoveHeavyIonInfo()
   {
-    /** reset **/
-
-    fCrossSection = 0.;
-    fCrossSectionError = 0.;
-    fAcceptedEvents = 0;
-    fAttemptedEvents = 0;
+    /** remove cross-section info **/
+    
+    RemoveGeneratorInfo(HeavyIonInfo::KeyName());
   }
-
-  /*****************************************************************/
-
-  void
-  CrossSectionInfo::Print(Option_t *opt) const
-  {
-    /** print **/
-
-    auto value = GetCrossSection();
-    auto error = GetCrossSectionError();
-    auto accepted = GetAcceptedEvents();
-    auto attempted = GetAttemptedEvents();
-    std::cout << ">>> cross-section: " << value << " +- " << error << " (pb) | accepted / attempted: " << accepted << " / " << attempted << std::endl;
-
-  }
-
+  
   /*****************************************************************/
   /*****************************************************************/
     
