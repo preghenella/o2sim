@@ -157,6 +157,34 @@ namespace eventgen
   /*****************************************************************/
 
   Bool_t
+  GeneratorHepMC::AddHeader(PrimaryGenerator *primGen) const
+  {
+    /** add header **/
+
+    /** add cross-section data **/
+    auto xs = fEvent->cross_section();
+    if (xs && xs->is_valid()) {
+      auto crossSection = fHeader->AddCrossSectionInfo();
+      crossSection->SetCrossSection(xs->cross_section);
+      crossSection->SetCrossSectionError(xs->cross_section_error);
+      crossSection->SetAcceptedEvents(xs->accepted_events);
+      crossSection->SetAttemptedEvents(xs->attempted_events);
+    }
+    else fHeader->RemoveCrossSectionInfo();
+      
+    /** add heavy-ion data **/
+    auto hi = fEvent->heavy_ion();
+    if (hi && hi->is_valid()) {
+      std::cout << "Found heavy-ion data to write" << std::endl;
+    }
+      
+    /** success **/
+    return Generator::AddHeader(primGen);
+  }
+  
+  /*****************************************************************/
+
+  Bool_t
   GeneratorHepMC::BoostEvent(Double_t boost)
   {
     /** boost **/
@@ -225,7 +253,7 @@ namespace eventgen
 
     /** create event **/
     fEvent = new HepMC::GenEvent();
-    
+
     /** success **/
     return !fReader->failed();
   }

@@ -64,6 +64,7 @@ namespace eventgen
     Bool_t AddTracks(FairPrimaryGenerator *primGen) const override;
     
     /** methods **/
+    Bool_t AddHeader(PrimaryGenerator *primGen) const override;
     const HepMC::FourVector GetBoostedVector(const HepMC::FourVector &vector, Double_t boost);
 
     /** HepMC interface **/

@@ -79,6 +79,19 @@ namespace eventgen
   /*****************************************************************/
 
   void
+  MCEventHeader::Print(Option_t *opt) const
+  {
+    /** print **/
+
+    auto eventId = GetEventID();
+    std::cout << "> event-id: " << eventId << " | N.primaries: " << GetNPrim() << std::endl;
+    for (Int_t igen = 0; igen < GetNumberOfGeneratorHeaders(); igen++)
+      GetGeneratorHeader(igen)->Print();
+  }
+
+  /*****************************************************************/
+
+  void
   MCEventHeader::AddHeader(GeneratorHeader *header)
   {
     /** add header **/

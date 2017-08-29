@@ -41,7 +41,12 @@ namespace eventgen
     /** destructor **/
     virtual ~MCEventHeader();
 
+    /** getters **/
+    Int_t GetNumberOfGeneratorHeaders() const {return fGeneratorHeaders->GetEntries();};
+    GeneratorHeader *GetGeneratorHeader(Int_t igen) const {return (GeneratorHeader *)fGeneratorHeaders->At(igen);};
+    
     /** methods **/
+    virtual void Print(Option_t *opt = "") const override;
     virtual void Reset();
     virtual void AddHeader(GeneratorHeader *header);
     

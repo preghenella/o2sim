@@ -51,8 +51,13 @@ namespace eventgen
     /** initialise **/
     fStack = stack;
     fNTracks = 0;
-    fEvent->Reset();
+    auto o2event = dynamic_cast<MCEventHeader *>(fEvent);
+    if (o2event) o2event->Reset();
+    else fEvent->Reset();
 
+    /** set event id **/
+    fEvent->SetEventID(fEventNr);
+    
     /** create event vertex **/
     MakeVertex();
     fEvent->SetVertex(fVertex);
@@ -71,6 +76,7 @@ namespace eventgen
     }
     fEvent->SetNPrim(fNTracks);
     
+    fEventNr++;
     fTotPrim += fNTracks; // screen output
 
     /** success **/

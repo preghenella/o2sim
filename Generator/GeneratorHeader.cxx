@@ -11,6 +11,7 @@
 /// \author R+Preghenella - August 2017
 
 #include "GeneratorHeader.h"
+#include <iostream>
 
 namespace o2
 {
@@ -24,10 +25,11 @@ namespace eventgen
     TNamed("ALICEo2", "ALICEo2 Generator Header"),
     fTrackOffset(0),
     fNumberOfTracks(0),
-    fNumberOfAttempts(0)
+    fNumberOfAttempts(0),
+    fInfo()
   {
     /** default constructor **/
-
+    
   }
 
   /*****************************************************************/
@@ -36,7 +38,8 @@ namespace eventgen
     TNamed(name, title),
     fTrackOffset(0),
     fNumberOfTracks(0),
-    fNumberOfAttempts(0)
+    fNumberOfAttempts(0),
+    fInfo()
   {
     /** constructor **/
 
@@ -48,7 +51,8 @@ namespace eventgen
     TNamed(rhs),
     fTrackOffset(rhs.fTrackOffset),
     fNumberOfTracks(rhs.fNumberOfTracks),
-    fNumberOfAttempts(rhs.fNumberOfAttempts)
+    fNumberOfAttempts(rhs.fNumberOfAttempts),
+    fInfo(rhs.fInfo)
   {
     /** copy constructor **/
 
@@ -66,6 +70,7 @@ namespace eventgen
     fTrackOffset = rhs.fTrackOffset;
     fNumberOfTracks = rhs.fNumberOfTracks;
     fNumberOfAttempts = rhs.fNumberOfAttempts;
+    fInfo = rhs.fInfo;
     return *this;
   }
 
@@ -87,6 +92,136 @@ namespace eventgen
     fTrackOffset = 0;
     fNumberOfTracks = 0;
     fNumberOfAttempts = 0;
+    for (auto &info : fInfo) 
+      info.second->Reset();
+  }
+
+  /*****************************************************************/
+
+  void
+  GeneratorHeader::Print(Option_t *opt) const
+  {
+    /** print **/
+
+    auto name = GetName();
+    auto offset = GetTrackOffset();
+    auto ntracks = GetNumberOfTracks();
+    std::cout << ">> generator: " << name << " | tracks: " << offset  << " -> " << offset + ntracks - 1 << std::endl;
+    for (auto const &info : fInfo) 
+      info.second->Print();
+  }
+
+  /*****************************************************************/
+  
+  CrossSectionInfo *
+  GeneratorHeader::GetCrossSectionInfo() const
+  {
+    /** get cross-section info **/
+
+    std::string key = CrossSectionInfo::KeyName();
+    if (!fInfo.count(key)) return NULL;
+    return dynamic_cast<CrossSectionInfo *>(fInfo.at(key));
+  }
+  
+  /*****************************************************************/
+
+  CrossSectionInfo *
+  GeneratorHeader::AddCrossSectionInfo()
+  {
+    /** add cross-section info **/
+
+    std::string key = CrossSectionInfo::KeyName();
+    if (!fInfo.count(key))
+      fInfo[key] = new CrossSectionInfo();
+    return static_cast<CrossSectionInfo *>(fInfo.at(key));
+  }
+  
+  /*****************************************************************/
+
+  void
+  GeneratorHeader::RemoveCrossSectionInfo()
+  {
+    /** remove cross-section info **/
+    
+    std::string key = CrossSectionInfo::KeyName();
+    if (!fInfo.count(key)) return;
+    fInfo.erase(key);
+  }
+  
+  /*****************************************************************/
+  /*****************************************************************/
+    
+  CrossSectionInfo::CrossSectionInfo() :
+    fCrossSection(0.),
+    fCrossSectionError(0.),
+    fAcceptedEvents(0),
+    fAttemptedEvents(0)
+  {
+    /** default constructor **/
+    
+  }
+
+  /*****************************************************************/
+
+  CrossSectionInfo::CrossSectionInfo(const CrossSectionInfo &rhs) :
+    fCrossSection(rhs.fCrossSection),
+    fCrossSectionError(rhs.fCrossSectionError),
+    fAcceptedEvents(rhs.fAcceptedEvents),
+    fAttemptedEvents(rhs.fAttemptedEvents)
+  {
+    /** copy constructor **/
+
+  }
+
+  /*****************************************************************/
+
+  CrossSectionInfo &
+  CrossSectionInfo::operator=(const CrossSectionInfo &rhs)
+  {
+    /** operator= **/
+    
+    if (this == &rhs) return *this;
+    fCrossSection = rhs.fCrossSection;
+    fCrossSectionError = rhs.fCrossSectionError;
+    fAcceptedEvents = rhs.fAcceptedEvents;
+    fAttemptedEvents = rhs.fAttemptedEvents;
+    return *this;
+  }
+
+  /*****************************************************************/
+
+  CrossSectionInfo::~CrossSectionInfo()
+  {
+    /** default destructor **/
+
+  }
+
+  /*****************************************************************/
+
+  void
+  CrossSectionInfo::Reset()
+  {
+    /** reset **/
+
+    fCrossSection = 0.;
+    fCrossSectionError = 0.;
+    fAcceptedEvents = 0;
+    fAttemptedEvents = 0;
+  }
+
+  /*****************************************************************/
+
+  void
+  CrossSectionInfo::Print(Option_t *opt) const
+  {
+    /** print **/
+
+    auto value = GetCrossSection();
+    auto error = GetCrossSectionError();
+    auto accepted = GetAcceptedEvents();
+    auto attempted = GetAttemptedEvents();
+    std::cout << ">>> cross-section: " << value << " +- " << error << " (pb) | accepted / attempted: " << accepted << " / " << attempted << std::endl;
+
   }
 
   /*****************************************************************/
