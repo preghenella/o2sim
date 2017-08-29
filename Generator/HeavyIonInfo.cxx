@@ -93,15 +93,6 @@ namespace eventgen
   /*****************************************************************/
 
   void
-  HeavyIonInfo::Fill(HepMC::GenHeavyIonPtr &hi)
-  {
-    /** fill **/
-
-  }
-
-  /*****************************************************************/
-
-  void
   HeavyIonInfo::Reset()
   {
     /** reset **/

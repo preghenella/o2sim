@@ -90,7 +90,7 @@ namespace eventgen
     /** print **/
 
     std::cout << ">>> sigma: " << fCrossSection << " +- " << fCrossSectionError << " (pb)"
-	      << " | accepted / attempted: " << fAcceptedEvent << " / " << fAttemptedEvents
+	      << " | accepted / attempted: " << fAcceptedEvents << " / " << fAttemptedEvents
 	      << std::endl;
 
   }

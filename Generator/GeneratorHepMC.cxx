@@ -12,6 +12,8 @@
 
 #include "GeneratorHepMC.h"
 #include "GeneratorHeader.h"
+#include "CrossSectionInfo.h"
+#include "HeavyIonInfo.h"
 #include "Trigger/TriggerHepMC.h"
 #include "FairLogger.h"
 #include "FairPrimaryGenerator.h"
