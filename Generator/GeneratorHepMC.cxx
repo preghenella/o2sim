@@ -11,6 +11,7 @@
 /// \author R+Preghenella - August 2017
 
 #include "GeneratorHepMC.h"
+#include "GeneratorHeader.h"
 #include "Trigger/TriggerHepMC.h"
 #include "FairLogger.h"
 #include "FairPrimaryGenerator.h"

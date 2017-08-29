@@ -15,7 +15,7 @@
 #define ALICEO2_EVENTGEN_MCEVENTHEADER_H_
 
 #include "FairMCEventHeader.h"
-#include "TClonesArray.h"
+#include <vector>
 
 namespace o2
 {
@@ -42,8 +42,7 @@ namespace eventgen
     virtual ~MCEventHeader();
 
     /** getters **/
-    Int_t GetNumberOfGeneratorHeaders() const {return fGeneratorHeaders->GetEntries();};
-    GeneratorHeader *GetGeneratorHeader(Int_t igen) const {return (GeneratorHeader *)fGeneratorHeaders->At(igen);};
+    const std::vector<GeneratorHeader *> &GeneratorHeaders() const {return fGeneratorHeaders;};
     
     /** methods **/
     virtual void Print(Option_t *opt = "") const override;
@@ -52,7 +51,7 @@ namespace eventgen
     
   protected:
 
-    TClonesArray *fGeneratorHeaders;
+    std::vector<GeneratorHeader *> fGeneratorHeaders;
     
     ClassDefOverride(MCEventHeader, 1);
 

@@ -24,7 +24,7 @@ namespace eventgen
 
   MCEventHeader::MCEventHeader() :
     FairMCEventHeader(),
-    fGeneratorHeaders(new TClonesArray("o2::eventgen::GeneratorHeader"))
+    fGeneratorHeaders()
   {
     /** default constructor **/
 
@@ -34,7 +34,7 @@ namespace eventgen
 
   MCEventHeader::MCEventHeader(const MCEventHeader &rhs) :
     FairMCEventHeader(rhs),
-    fGeneratorHeaders(new TClonesArray(*rhs.fGeneratorHeaders))
+    fGeneratorHeaders(rhs.fGeneratorHeaders)
   {
     /** copy constructor **/
 
@@ -49,7 +49,7 @@ namespace eventgen
 
     if (this == &rhs) return *this;
     FairMCEventHeader::operator=(rhs);
-    *fGeneratorHeaders = *rhs.fGeneratorHeaders;
+    fGeneratorHeaders = rhs.fGeneratorHeaders;
     return *this;
   }
 
@@ -59,10 +59,6 @@ namespace eventgen
   {
     /** default destructor **/
 
-    if (fGeneratorHeaders) {
-      fGeneratorHeaders->Delete();
-      delete fGeneratorHeaders;
-    }
   }
 
   /*****************************************************************/
@@ -72,7 +68,7 @@ namespace eventgen
   {
     /** reset **/
 
-    fGeneratorHeaders->Delete();
+    fGeneratorHeaders.clear();
     FairMCEventHeader::Reset();
   }
 
@@ -85,8 +81,8 @@ namespace eventgen
 
     auto eventId = GetEventID();
     std::cout << "> event-id: " << eventId << " | N.primaries: " << GetNPrim() << std::endl;
-    for (Int_t igen = 0; igen < GetNumberOfGeneratorHeaders(); igen++)
-      GetGeneratorHeader(igen)->Print();
+    for (auto const &header : fGeneratorHeaders) 
+      header->Print();
   }
 
   /*****************************************************************/
@@ -96,7 +92,7 @@ namespace eventgen
   {
     /** add header **/
 
-    new ((*fGeneratorHeaders)[fGeneratorHeaders->GetEntries()]) GeneratorHeader(*header);
+    fGeneratorHeaders.push_back(new GeneratorHeader(*header));
   }
   
   /*****************************************************************/
