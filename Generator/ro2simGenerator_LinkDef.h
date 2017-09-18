@@ -26,7 +26,7 @@
 #pragma link C++ class o2::eventgen::GeneratorHepMC+;
 #pragma link C++ class o2::eventgen::GeneratorTGenerator+;
 
-#pragma link C++ class std::vector<GeneratorHeader *>
+#pragma link C++ class std::vector<GeneratorHeader *>;
 #pragma link C++ class std::map<std::string, GeneratorInfo *>+;
 
 #pragma link C++ class o2sim::GeneratorManager+;

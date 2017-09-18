@@ -9,12 +9,14 @@
 // or submit itself to any jurisdiction.
 
 #include "GeneratorTGenerator.h"
+#include "GeneratorHeader.h"
 #include "Trigger/TriggerTGenerator.h"
 #include "FairLogger.h"
 #include "FairPrimaryGenerator.h"
 #include "TGenerator.h"
 #include "TClonesArray.h"
 #include "TParticle.h"
+#include "THijing.h"
 
 namespace o2
 {
@@ -121,6 +123,17 @@ namespace eventgen
     return kTRUE;
   }
 
+  /*****************************************************************/
+
+  Bool_t
+  GeneratorTGenerator::AddHeader(PrimaryGenerator *primGen) const
+  {
+    /** add header **/
+
+    /** success **/
+    return Generator::AddHeader(primGen);
+  }
+  
   /*****************************************************************/
 
   Bool_t

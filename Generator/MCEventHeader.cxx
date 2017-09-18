@@ -24,7 +24,9 @@ namespace eventgen
 
   MCEventHeader::MCEventHeader() :
     FairMCEventHeader(),
-    fGeneratorHeaders()
+    fGeneratorHeaders(),
+    fEmbeddingFileName(),
+    fEmbeddingEventCounter(-1)
   {
     /** default constructor **/
 
@@ -34,7 +36,9 @@ namespace eventgen
 
   MCEventHeader::MCEventHeader(const MCEventHeader &rhs) :
     FairMCEventHeader(rhs),
-    fGeneratorHeaders(rhs.fGeneratorHeaders)
+    fGeneratorHeaders(rhs.fGeneratorHeaders),
+    fEmbeddingFileName(rhs.fEmbeddingFileName),
+    fEmbeddingEventCounter(rhs.fEmbeddingEventCounter)
   {
     /** copy constructor **/
 
@@ -50,6 +54,8 @@ namespace eventgen
     if (this == &rhs) return *this;
     FairMCEventHeader::operator=(rhs);
     fGeneratorHeaders = rhs.fGeneratorHeaders;
+    fEmbeddingFileName = rhs.fEmbeddingFileName;
+    fEmbeddingEventCounter = rhs.fEmbeddingEventCounter;
     return *this;
   }
 
@@ -69,6 +75,8 @@ namespace eventgen
     /** reset **/
 
     fGeneratorHeaders.clear();
+    fEmbeddingFileName = "";
+    fEmbeddingEventCounter = -1;
     FairMCEventHeader::Reset();
   }
 
@@ -80,7 +88,10 @@ namespace eventgen
     /** print **/
 
     auto eventId = GetEventID();
-    std::cout << "> event-id: " << eventId << " | N.primaries: " << GetNPrim() << std::endl;
+    std::cout << "> event-id: " << eventId
+	      << " | xyz: (" << GetX() << ", " << GetY() << ", " << GetZ() << ")"
+	      << " | N.primaries: " << GetNPrim()
+	      << std::endl;
     for (auto const &header : fGeneratorHeaders) 
       header->Print();
   }

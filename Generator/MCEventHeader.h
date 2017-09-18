@@ -43,6 +43,10 @@ namespace eventgen
 
     /** getters **/
     const std::vector<GeneratorHeader *> &GeneratorHeaders() const {return fGeneratorHeaders;};
+
+    /** setters **/
+    void SetEmbeddingFileName(TString value) {fEmbeddingFileName = value;};
+    void SetEmbeddingEventCounter(Int_t value) {fEmbeddingEventCounter = value;};
     
     /** methods **/
     virtual void Print(Option_t *opt = "") const override;
@@ -52,6 +56,8 @@ namespace eventgen
   protected:
 
     std::vector<GeneratorHeader *> fGeneratorHeaders;
+    TString fEmbeddingFileName;
+    Int_t   fEmbeddingEventCounter;
     
     ClassDefOverride(MCEventHeader, 1);
 

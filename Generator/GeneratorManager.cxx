@@ -31,6 +31,7 @@ namespace o2sim
     /** register values **/
     RegisterValue("diamond_xyz", "0., 0., 0.");
     RegisterValue("diamond_sigma_xyz", "0., 0., 0.");
+    RegisterValue("embed_into");
     
   }
   
@@ -70,7 +71,7 @@ namespace o2sim
     }
 
     /** config primary generator **/
-    if (!SetupInteractionDiamond(primGen)) return kFALSE;
+    if (!ConfigurePrimaryGenerator(primGen)) return kFALSE;
 
     /** add primary generator to FairRunSim instance **/
     runsim->SetGenerator(primGen);
@@ -109,6 +110,34 @@ namespace o2sim
     return kTRUE;
   }
   
+  /*****************************************************************/
+
+  Bool_t
+  GeneratorManager::ConfigurePrimaryGenerator(o2eg::PrimaryGenerator *primGen) const
+  {
+    /** configure primary generator **/
+
+    /** setup interaction diamond **/
+    if (!SetupInteractionDiamond(primGen)) return kFALSE;
+
+    /** check embed into **/
+    if (!IsNull("embed_into")) {
+      TString embed_into = GetValue("embed_into");
+      if (gSystem->ExpandPathName(embed_into)) {
+	LOG(FATAL) << "Cannot expand \"" << "embed_into" << "\": " << embed_into << std::endl;
+	return kFALSE;
+      }
+      if (!primGen->EmbedInto(embed_into)) {
+	LOG(FATAL) << "Cannot embed into " << embed_into << std::endl;
+	return kFALSE;
+      }
+      LOG(INFO) << "Embedding into " << embed_into << std::endl;
+    }
+    
+    /** success **/
+    return kTRUE;
+  }
+
   /*****************************************************************/
 
   Bool_t

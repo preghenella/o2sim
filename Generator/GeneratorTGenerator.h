@@ -58,7 +58,10 @@ namespace eventgen
     Bool_t BoostEvent(Double_t boost) override;
     Bool_t TriggerFired(Trigger *trigger) const override;
     Bool_t AddTracks(FairPrimaryGenerator *primGen) const override;
-    
+
+    /** methods **/
+    Bool_t AddHeader(PrimaryGenerator *primGen) const override;
+
     /** TGenerator interface **/
     TGenerator *fGenerator;
     TClonesArray *fParticles;

@@ -42,6 +42,7 @@ namespace o2sim {
     
   private:
 
+    Bool_t ConfigurePrimaryGenerator(o2eg::PrimaryGenerator *primGen) const;
     Bool_t SetupInteractionDiamond(o2eg::PrimaryGenerator *primGen) const;
     
     ClassDefOverride(GeneratorManager, 1)
